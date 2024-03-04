@@ -1,0 +1,84 @@
+package com.app.eazyliving.network
+
+import com.app.eazyliving.model.Devices
+import com.app.eazyliving.model.LoginCredentials
+import com.app.eazyliving.model.User
+
+class ApiCalls(private val apiService: ApiService) {
+    /*
+        If response is successful (response.isSuccessful), return the User object extracted from the response body.
+        If response is unsuccessful, show some fancy error message.
+        If an exception is thrown, show some other fancy error message.
+
+        You can call the login function and handle the response there without having to deal with the Retrofit stuff.
+     */
+
+    /*
+        Example usage:
+          val loginCredentials = LoginCredentials("email", "password")
+            val user = apiCalls.login(loginCredentials)
+            if (user != null) {
+                // Handle successful login
+            } else {
+                // Handle unsuccessful login
+            }
+     */
+
+    suspend fun login(loginCredentials: LoginCredentials): User? {
+        return try {
+            val response = apiService.login(loginCredentials)
+            if (response.isSuccessful) {
+                response.body() // Returns User object if login is successful.
+            } else {
+                // Handle unsuccessful login by displaying an error message to the user.
+                null
+            }
+        } catch (e: Exception) {
+            // Handle errors by displaying an error message.
+            null
+        }
+    }
+
+    suspend fun logout() {
+        try {
+            val response = apiService.logout()
+            if (response.isSuccessful) {
+            // Send the user to the login screen.
+            } else {
+            // Handle unsuccessful request by displaying an error message to the user.
+            }
+        } catch (e: Exception) {
+        // Handle errors by displaying an error message.
+        }
+    }
+
+    suspend fun getSensors(): List<Devices>? {
+        return try {
+            val response = apiService.getSensors()
+            if (response.isSuccessful) {
+                response.body() // Returns list of Devices if successful.
+            } else {
+                // Handle unsuccessful request by displaying an error message to the user.
+                null
+            }
+        } catch (e: Exception) {
+            // Handle errors by displaying an error message.
+            null
+        }
+    }
+
+    suspend fun updateSensors(): Devices? {
+        return try {
+            val response = apiService.updateSensors()
+            if (response.isSuccessful) {
+                response.body() // Returns Devices object if successful.
+            } else {
+                // Handle unsuccessful request by displaying an error message to the user.
+                null
+            }
+        } catch (e: Exception) {
+            // Handle errors by displaying an error message.
+            null
+        }
+    }
+}
