@@ -3,7 +3,6 @@ package com.app.eazyliving
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -17,7 +16,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.app.eazyliving.ui.theme.EazyLivingTheme
 
 class MainActivity : ComponentActivity() {
-    private var switchState by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -27,10 +25,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.wrapContentSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SensorCard(
-                        switchState = switchState,
-                        onSwitchStateChanged = { newState -> switchState = newState }
-                    )
+                    // HomeScreen()
+                    Header()
                 }
             }
         }
