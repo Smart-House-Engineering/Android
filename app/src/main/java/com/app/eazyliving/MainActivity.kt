@@ -11,11 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.app.eazyliving.Screens.LoginScreen
+import com.app.eazyliving.network.Retrofit
 import com.app.eazyliving.ui.theme.EazyLivingTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Retrofit.initialize(this)
         setContent {
             EazyLivingTheme {
                 // A surface container using the 'background' color from the theme

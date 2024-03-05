@@ -5,10 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.eazyliving.model.LoginCredentials
-import com.app.eazyliving.model.User
 import com.app.eazyliving.network.ApiCalls
 import kotlinx.coroutines.launch
 import com.app.eazyliving.network.Retrofit.apiService
+import okhttp3.ResponseBody
 
 class LoginViewModel : ViewModel() {
     // LiveData to observe login state in the UI
@@ -35,7 +35,7 @@ class LoginViewModel : ViewModel() {
 sealed class LoginState {
     object Idle : LoginState()
     object Loading : LoginState()
-    data class Success(val user: User) : LoginState()
+    data class Success(val user: ResponseBody?) : LoginState()
     data class Error(val message: String) : LoginState()
 }
 
