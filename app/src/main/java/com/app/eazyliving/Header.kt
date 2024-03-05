@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 fun Header() {
     Row(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(16.dp),
         horizontalArrangement = Arrangement.Center
     ) {
