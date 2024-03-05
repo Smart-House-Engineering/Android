@@ -22,7 +22,6 @@ fun SensorCard(
             .padding(8.dp)
             .height(200.dp)
             .width(160.dp)
-            .fillMaxSize()
     ) {
         Column(
             modifier = Modifier
