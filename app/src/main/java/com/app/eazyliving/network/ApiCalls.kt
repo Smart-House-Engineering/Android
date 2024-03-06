@@ -31,7 +31,7 @@ class ApiCalls(private val apiService: ApiService) {
             println("response: $response")
 
             if (response.isSuccessful) {
-                response.body() // Returns User object if login is successful. // returns status 200 or okay if the
+                response.body()  // returns status 200 or okay if successful
             } else {
                 println("Error response: ${response.errorBody()?.string()}")
                 // Handle unsuccessful login by displaying an error message to the user.

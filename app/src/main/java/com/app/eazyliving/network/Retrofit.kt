@@ -1,6 +1,7 @@
 package com.app.eazyliving.network
 
 import android.content.Context
+import com.app.eazyliving.network.Cookies.ReceivedCookiesInterceptor
 import okhttp3.OkHttpClient
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.Retrofit
