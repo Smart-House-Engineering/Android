@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -40,19 +41,26 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.app.eazyliving.R
+import com.app.eazyliving.ViewModel.LoginState
 import com.app.eazyliving.ViewModel.LoginViewModel
 
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavController,loginViewModel: LoginViewModel = viewModel()) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
-    val viewModel = LoginViewModel()
-    val loginState by viewModel.loginState.observeAsState()
+    val loginState by loginViewModel.loginState.observeAsState()
 
+    LaunchedEffect(loginState) {
+        if (loginState is LoginState.Success) {
+            navController.navigate(Screen.HomeScreen.route)
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -102,13 +110,17 @@ fun LoginScreen() {
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(
-            onClick = {  viewModel.login(email, password)},
+            onClick = {  loginViewModel.login(email, password)},
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(61,122,172)
             ),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Login")
+        }
+        if (loginState is LoginState.Error) {
+            val errorMessage = (loginState as LoginState.Error).message
+            Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
         }
     }
 }
