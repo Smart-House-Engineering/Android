@@ -2,6 +2,7 @@ package com.app.eazyliving
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -21,27 +22,30 @@ fun SensorCard(
         modifier = Modifier
             .padding(8.dp)
             .height(200.dp)
-            .width(160.dp)
+            .width(160.dp),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(10.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+                .background(Color(0xFFC4E2FB)),
+            verticalArrangement = Arrangement.SpaceBetween,
+
         ) {
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(color = Color.White, shape = CircleShape)
-                    .padding(top = 20.dp, start = 20.dp),
+                    .offset(20.dp, 20.dp)
+                    .background(color = Color.White, shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "Icon", color = Color.Black)
+                Text(text = "Icon", color = Color(0xFF838A8F))
             }
             Text(
                 text = "Name",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 8.dp)
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier
+                    .offset(20.dp),
+                color = Color(0xFF838A8F)
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -49,15 +53,15 @@ fun SensorCard(
             ) {
                 Text(
                     text = "on/off",
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(8.dp)
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.offset(20.dp),
+                    color = Color(0xFF838A8F)
                 )
                 Switch(
                     checked = switchState,
                     onCheckedChange = { newState -> onSwitchStateChanged(newState) },
                     modifier = Modifier
-                        .padding(start = 20.dp)
-
+                        .padding(start = 40.dp)
                 )
             }
         }

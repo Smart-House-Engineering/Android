@@ -1,13 +1,17 @@
 package com.app.eazyliving
 
+import android.graphics.fonts.FontStyle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -22,7 +26,11 @@ fun Header() {
 
         Text(
             text = "Easy",
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontFamily = FontFamily.Cursive,
+                fontWeight = FontWeight.Bold,
+                color = Color(android.graphics.Color.parseColor("#F48808"))
+            ),
             modifier = Modifier.padding(top = 8.dp)
         )
 
@@ -38,7 +46,11 @@ fun Header() {
 
         Text(
             text = "Living",
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontFamily = FontFamily.Cursive,
+                fontWeight = FontWeight.Bold,
+                color = Color(android.graphics.Color.parseColor("#F48808"))
+            ),
             modifier = Modifier.padding(top = 8.dp)
         )
     }
