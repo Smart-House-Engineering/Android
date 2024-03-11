@@ -85,12 +85,12 @@ fun UserCard() {
                     text = "User Email",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(start = 10.dp),
-                    color = Color(0xFF838A8F))
+                    color = Color(0xFF393939))
                 Text(
                     text = "User Role",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(start = 8.dp),
-                    color = Color(0xFF838A8F))
+                    color = Color(0xFF393939))
             }
             Row(
                 modifier = Modifier
@@ -103,7 +103,7 @@ fun UserCard() {
                     text = todayDate.value,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(start = 10.dp),
-                    color = Color(0xFF838A8F)
+                    color = Color(0xFF393939)
                 )
 
                 val currentTime = rememberUpdatedState(getFormattedTime())
@@ -113,7 +113,7 @@ fun UserCard() {
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
                         .padding(start = 8.dp),
-                    color = Color(0xFF838A8F)
+                    color = Color(0xFF393939)
                 )
             }
             }

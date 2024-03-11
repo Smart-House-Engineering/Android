@@ -1,6 +1,4 @@
 package com.app.eazyliving
-
-import android.graphics.fonts.FontStyle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -38,8 +36,8 @@ fun Header() {
             painter = painterResource(id = R.drawable.easyliving),
             contentDescription = "easy livng Image",
             modifier = Modifier
-                .fillMaxWidth(0.3f)
-                .fillMaxHeight(0.1f)
+                .width(85.dp)
+                .height(85.dp)
                 .clip(shape = MaterialTheme.shapes.medium),
             contentScale = ContentScale.Crop
         )
