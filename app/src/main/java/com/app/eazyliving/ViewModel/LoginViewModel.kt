@@ -48,12 +48,12 @@ class LoginViewModel : ViewModel() {
             _userRole.value = it.role
             _navigationDestination.value = when (it.role) {
                 "OWNER" -> "HomeScreen"
-                "SubUser" -> "SubUserScreen"
-                "External" -> "ExternalScreen"
+                "TENANT" -> "SubUserScreen"
+                "EXTERNAL" -> "ExternalScreen"
                 else -> null
             }
             _loginState.value = if (_navigationDestination.value != null) {
-                LoginState.Success(null) // Success, but passing null for the user as an example
+                LoginState.Success (it.role)
             } else {
                 LoginState.Error("Invalid user role")
             }
@@ -70,6 +70,6 @@ class LoginViewModel : ViewModel() {
 sealed class LoginState {
     object Idle : LoginState()
     object Loading : LoginState()
-    data class Success(val user: ResponseBody?) : LoginState() // You may want to replace ResponseBody? with something more meaningful
+    data class Success(val role: String) : LoginState()
     data class Error(val message: String) : LoginState()
 }

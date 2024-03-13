@@ -24,7 +24,7 @@ object Retrofit {
     fun initialize(context: Context) {
         cookieInterceptor = ReceivedCookiesInterceptor(context)
     }
-    private const val BASE_URL = "https://backend-ten-ruby.vercel.app/"
+    private const val BASE_URL = "https://evanescent-beautiful-venus.glitch.me/"
     val apiService: ApiService by lazy {
         val clientBuilder = OkHttpClient.Builder()
         cookieInterceptor?.let {

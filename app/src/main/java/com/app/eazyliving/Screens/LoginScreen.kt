@@ -60,11 +60,6 @@ fun LoginScreen(navController: NavController,loginViewModel: LoginViewModel = vi
     val loginState by loginViewModel.loginState.observeAsState()
     val navigationDestination by loginViewModel.navigationDestination.observeAsState()
 
-    LaunchedEffect(loginState) {
-        if (loginState is LoginState.Success) {
-            navController.navigate(Screen.HomeScreen.route)
-        }
-    }
     LaunchedEffect(navigationDestination) {
         navigationDestination?.let { destination ->
             navController.navigate(destination)
