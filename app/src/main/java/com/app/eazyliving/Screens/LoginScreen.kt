@@ -1,5 +1,7 @@
 package com.app.eazyliving.Screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -48,6 +50,7 @@ import com.app.eazyliving.ViewModel.LoginState
 import com.app.eazyliving.ViewModel.LoginViewModel
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun LoginScreen(navController: NavController,loginViewModel: LoginViewModel = viewModel()) {
     var email by remember { mutableStateOf("") }
@@ -55,10 +58,16 @@ fun LoginScreen(navController: NavController,loginViewModel: LoginViewModel = vi
     var passwordVisibility by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val loginState by loginViewModel.loginState.observeAsState()
+    val navigationDestination by loginViewModel.navigationDestination.observeAsState()
 
     LaunchedEffect(loginState) {
         if (loginState is LoginState.Success) {
             navController.navigate(Screen.HomeScreen.route)
+        }
+    }
+    LaunchedEffect(navigationDestination) {
+        navigationDestination?.let { destination ->
+            navController.navigate(destination)
         }
     }
     Column(
