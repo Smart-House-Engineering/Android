@@ -7,14 +7,9 @@ import androidx.annotation.RequiresApi
 
 object TokenManager {
 
-    fun getDecodedTokenData(context: Context): Pair<String, String>? {
-        // Check Android version inside the function
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val jwtToken = extractJwtFromCookies(context) ?: return null
-            return decodeJWT(jwtToken)
-        } else {
-            Log.e("TokenManager", "Android version is too low for Base64 decoding")
-            return null
-        }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getDecodedTokenData(context: Context): JwtPayload? {
+        val jwtToken = extractJwtFromCookies(context) ?: return null
+        return decodeJWTAndExtractData(jwtToken) // This now returns JwtPayload or null
     }
 }

@@ -1,8 +1,8 @@
 package com.app.eazyliving.model
 
+import org.json.JSONArray
+
 data class User(
     val email: String,
-    val password: String,
-    val role: String,
-    val homeId: String
+    val role: JSONArray?
 )
