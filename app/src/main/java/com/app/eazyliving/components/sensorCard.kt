@@ -1,4 +1,4 @@
-package com.app.eazyliving
+package com.app.eazyliving.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape

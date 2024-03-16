@@ -1,4 +1,4 @@
-package com.app.eazyliving
+package com.app.eazyliving.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -11,6 +11,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.app.eazyliving.R
 
 @Composable
 fun Header() {

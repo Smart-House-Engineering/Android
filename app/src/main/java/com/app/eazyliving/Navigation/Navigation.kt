@@ -16,26 +16,22 @@ import com.app.eazyliving.Screens.subUserScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Navigation(loginViewModel: LoginViewModel= viewModel()) {
-        val navController = rememberNavController()
+fun Navigation() {
+    val navController = rememberNavController()
+    val viewModel: LoginViewModel = viewModel()
 
-
-        NavHost(navController = navController, startDestination = Screen.LoginScreen.route){
-
-            composable(route = Screen.LoginScreen.route) {
-                LoginScreen(navController = navController)
-            }
-
-            composable(route = Screen.HomeScreen.route) {
-                HomeScreen(navController = navController)
-            }
-
-            composable(route = Screen.SubUserScreen.route) {
-               subUserScreen(navController = navController)
-            }
-
-            composable(route = Screen.ExternalScreen.route) {
-                externalScreen(navController = navController)
-            }
+    NavHost(navController = navController, startDestination = Screen.LoginScreen.route){
+        composable(route = Screen.LoginScreen.route) {
+            LoginScreen(navController = navController, loginViewModel = viewModel)
         }
+        composable(route = Screen.HomeScreen.route) {
+            HomeScreen(navController = navController, loginViewModel = viewModel)
+        }
+        composable(route = Screen.SubUserScreen.route) {
+            subUserScreen(navController = navController)
+        }
+        composable(route = Screen.ExternalScreen.route) {
+            externalScreen(navController = navController)
+        }
+    }
 }

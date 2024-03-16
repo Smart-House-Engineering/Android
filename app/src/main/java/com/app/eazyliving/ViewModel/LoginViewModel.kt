@@ -1,6 +1,7 @@
 package com.app.eazyliving.ViewModel
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,6 +17,9 @@ class LoginViewModel : ViewModel() {
 
     private val _loginState = MutableLiveData<LoginState>()
     val loginState: LiveData<LoginState> = _loginState
+
+    private val _userEmail = MutableLiveData<String?>()
+    val userEmail: LiveData<String?> = _userEmail
 
     private val _userRole = MutableLiveData<String?>()
     val userRole: LiveData<String?> = _userRole
@@ -46,6 +50,7 @@ class LoginViewModel : ViewModel() {
         val jwtPayload = decodeJWTAndExtractData(token)
         jwtPayload?.let {
             _userRole.value = it.role
+            _userEmail.value = it.email
             _navigationDestination.value = when (it.role) {
                 "OWNER" -> "HomeScreen"
                 "TENANT" -> "SubUserScreen"
