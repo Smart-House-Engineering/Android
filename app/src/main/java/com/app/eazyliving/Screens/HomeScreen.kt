@@ -32,14 +32,12 @@ fun HomeScreen(navController: NavHostController, loginViewModel: LoginViewModel 
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(8.dp)
         ) {
             Header()
             Row (
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
             ){
                 UserCard(userEmail = userEmail, userRole = userRole)
                 Spacer(modifier = Modifier.width(16.dp))
