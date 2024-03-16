@@ -14,7 +14,7 @@ import retrofit2.http.*
 */
 
 interface ApiService {
-    @GET("/api/modes/defaultMode")
+    @GET("/api/homeUser/defaultMode")
     suspend fun getSensors(): Response<List<Devices>> // <- returns list of Devices
 
     @POST("/auth/login")
@@ -23,6 +23,6 @@ interface ApiService {
     @POST("/auth/logout")
     suspend fun logout(): Response<Unit> // <- Unit is the return type of a void function
 
-    @PUT("/api/modes/defaultMode")
+    @PUT("/api/homeUser/defaultMode")
     suspend fun updateSensors(): Response<Devices> // <- TODO: fix this thing
 }

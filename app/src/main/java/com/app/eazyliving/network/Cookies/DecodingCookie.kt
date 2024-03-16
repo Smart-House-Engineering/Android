@@ -3,25 +3,42 @@ package com.app.eazyliving.network.Cookies
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.app.eazyliving.model.User
+import org.json.JSONObject
 import java.util.Base64
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun decodeJWT(token: String): Pair<String, String>{
-        val elements = token.split('.')
-        if (elements.size == 3) {
-            var (header, payload, signature) = elements
-            val decoder: Base64.Decoder = Base64.getUrlDecoder()
+data class JwtPayload(val email: String, val role: String)
 
-             header= String(decoder.decode(elements[0]))
-            Log.d("header","$header")
-             payload = String(decoder.decode(elements[1]))
-            Log.d("payload","$[payload]")
-            return Pair(header, payload)
+@RequiresApi(Build.VERSION_CODES.O)
+fun decodeJWTAndExtractData(token: String): JwtPayload? {
+    val elements = token.split('.')
+    if (elements.size == 3) {
+        val payload = elements[1] // The payload is the second part of the token
+        val decoder = Base64.getUrlDecoder() // Decoding from Base64URL
+        val decodedPayload = String(decoder.decode(payload))
+        Log.d("JWT", "Decoded payload: $decodedPayload")
+
+        // Convert payload into a JSONObject
+        val payloadObj = JSONObject(decodedPayload)
+
+        // Extract email and role
+        val userObj =
+            payloadObj.optJSONObject("user") // 'user' is expected to be a nested JSON object
+        if (userObj != null) {
+            val email = userObj.optString("email", "")
+            val role = userObj.optString("role", "")
+            Log.d("Role", "Decoded payload: $role")
+            return JwtPayload(email, role)
         } else {
-            error("Invalid token")
+            Log.e("JWT", "Invalid token: does not contain 3 segments.")
+            return null
         }
+    }else{
+        return null
     }
+}
+
 
 
 

@@ -1,43 +1,75 @@
 package com.app.eazyliving.ViewModel
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.eazyliving.model.LoginCredentials
-import com.app.eazyliving.network.ApiCalls
+import com.app.eazyliving.network.Cookies.decodeJWTAndExtractData
 import kotlinx.coroutines.launch
 import com.app.eazyliving.network.Retrofit.apiService
 import okhttp3.ResponseBody
 
 class LoginViewModel : ViewModel() {
-    // LiveData to observe login state in the UI
+
     private val _loginState = MutableLiveData<LoginState>()
     val loginState: LiveData<LoginState> = _loginState
 
-    // Function to attempt login
-    fun login(email: String, password: String) {
-        val credentials = LoginCredentials(email, password)
+    private val _userRole = MutableLiveData<String?>()
+    val userRole: LiveData<String?> = _userRole
 
-        viewModelScope.launch {
-            val apiCalls = ApiCalls( apiService)
-            val result = apiCalls.login(credentials)
-            if (result != null) {
-                _loginState.value = LoginState.Success(result)
-                println("result $result")
-            } else {
-                _loginState.value = LoginState.Error("Invalid credentials or network error")
+    private val _navigationDestination = MutableLiveData<String?>()
+    val navigationDestination: LiveData<String?> = _navigationDestination
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun login(email: String, password: String) {
+    viewModelScope.launch {
+        _loginState.value = LoginState.Loading // Indicate that the login process has started
+        val result = apiService.login(LoginCredentials(email, password))
+        if (result.isSuccessful) {
+
+            val token = result.headers()["Set-Cookie"]
+
+            token?.let { processLoginResult(it) } ?: run {
+                _loginState.value = LoginState.Error("No token received")
             }
+        } else {
+            _loginState.value = LoginState.Error("Login failed with status code: ${result.code()}")
         }
+    }
+}
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun processLoginResult(token: String) {
+        val jwtPayload = decodeJWTAndExtractData(token)
+        jwtPayload?.let {
+            _userRole.value = it.role
+            _navigationDestination.value = when (it.role) {
+                "OWNER" -> "HomeScreen"
+                "TENANT" -> "SubUserScreen"
+                "EXTERNAL" -> "ExternalScreen"
+                else -> null
+            }
+            _loginState.value = if (_navigationDestination.value != null) {
+                LoginState.Success (it.role)
+            } else {
+                LoginState.Error("Invalid user role")
+            }
+        } ?: run {
+            _loginState.value = LoginState.Error("Failed to decode JWT or determine user role")
+        }
+    }
+
+    fun resetNavigationDestination() {
+        _navigationDestination.value = null
     }
 }
 
 sealed class LoginState {
     object Idle : LoginState()
     object Loading : LoginState()
-    data class Success(val user: ResponseBody?) : LoginState()
+    data class Success(val role: String) : LoginState()
     data class Error(val message: String) : LoginState()
 }
-
-
-
