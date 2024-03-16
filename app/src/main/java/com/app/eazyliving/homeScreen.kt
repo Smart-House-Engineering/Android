@@ -29,7 +29,6 @@ fun HomeScreen(navController: LoginViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
-                    .align(Alignment.CenterHorizontally)
             ) {
                 items(4) { rowIndex ->
                     LazyRow(

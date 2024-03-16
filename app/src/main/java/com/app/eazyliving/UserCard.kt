@@ -106,7 +106,7 @@ fun UserCard() {
                     color = Color(0xFF393939)
                 )
 
-                val currentTime = rememberUpdatedState(getFormattedTime())
+                /*val currentTime = rememberUpdatedState(getFormattedTime())
 
                 Text(
                     text = "Time: ${currentTime.value}",
@@ -114,7 +114,7 @@ fun UserCard() {
                     modifier = Modifier
                         .padding(start = 8.dp),
                     color = Color(0xFF393939)
-                )
+                )*/
             }
             }
         }
