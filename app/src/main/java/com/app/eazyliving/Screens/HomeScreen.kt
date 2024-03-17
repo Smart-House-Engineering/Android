@@ -25,20 +25,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.app.eazyliving.R
+import com.app.eazyliving.ViewModel.HomeViewModel
 
 @SuppressLint("RememberReturnType")
 @Composable
-fun HomeScreen(navController: NavHostController, loginViewModel: LoginViewModel = viewModel()) {
+fun HomeScreen(navController: NavHostController, loginViewModel: LoginViewModel = viewModel(), homeViewModel: HomeViewModel = viewModel()) {
     val userEmail by loginViewModel.userEmail.observeAsState()
     val userRole by loginViewModel.userRole.observeAsState()
-
-    val sensors = remember {
-        mutableStateListOf(
-            SensorData("Light", false),
-            SensorData("Fan", false),
-            // Add more sensors as needed
-        )
-    }
+    val sensors by homeViewModel.sensors.observeAsState(emptyList())
+//    val sensors = remember {
+//        mutableStateListOf(
+//            SensorData("Light", false),
+//            SensorData("Fan", false),
+//            // Add more sensors as needed
+//        )
+//    }
 
     Log.d("HomeScreen", "User Email: $userEmail")
     Log.d("HomeScreen", "User Role: $userRole")
