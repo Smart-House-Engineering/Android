@@ -12,8 +12,8 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repository: ApiService) : ViewModel() {
 
-    private val _sensors = MutableLiveData<List<Devices>>()
-    val sensors: LiveData<List<Devices>> = _sensors
+    private val _sensors = MutableLiveData<List<SensorData>>()
+    val sensors: LiveData<List<SensorData>> = _sensors
 
     init {
         getSensors()
@@ -22,11 +22,24 @@ class HomeViewModel(private val repository: ApiService) : ViewModel() {
     private fun getSensors() {
         viewModelScope.launch {
             try {
-                val fetchedSensors = repository.getSensors()
-                _sensors.value = fetchedSensors
+                val response = repository.getSensors()  // Ensure this matches the actual function signature
+                if (response.isSuccessful) {
+                    val devices = response.body()  // This should be a Devices object or List<Devices>
+                    val sensorDataList = devices?.let {
+                        listOf(
+                            SensorData("Fan", it.fan),
+                            SensorData("Yellow LED", it.yellowLed > 0)  // Assuming these properties exist
+                            // Convert other device states as needed
+                        )
+                    }
+                    _sensors.value = sensorDataList ?: listOf()  // Update LiveData with the converted list
+                } else {
+                    Log.e("HomeViewModel", "Failed to fetch sensors: ${response.errorBody()?.string()}")
+                    // Optionally update LiveData to indicate the error state
+                }
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error fetching sensors", e)
-                // Handle errors appropriately in your app context
+                // Optionally update LiveData to indicate the error state
             }
         }
     }
