@@ -2,8 +2,6 @@ package com.app.eazyliving.network
 
 import com.app.eazyliving.model.Devices
 import com.app.eazyliving.model.LoginCredentials
-import com.app.eazyliving.model.SensorData
-import com.app.eazyliving.model.User
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
@@ -15,7 +13,7 @@ import retrofit2.http.*
 */
 
 interface ApiService {
-    @GET("/api/homeUser/defaultMode")
+    @GET("/api/modes/defaultMode")
     suspend fun getSensors():Response<Devices> // <- returns list of Devices
 
     @POST("/auth/login")
@@ -25,5 +23,5 @@ interface ApiService {
     suspend fun logout(): Response<Unit> // <- Unit is the return type of a void function
 
     @PUT("/api/homeUser/defaultMode")
-    suspend fun updateSensors(): Response<Devices> // <- TODO: fix this thing
+    suspend fun updateSensors(@Body requestBody: Map<String, Any>): Response<Boolean>// <- TODO: fix this thing
 }

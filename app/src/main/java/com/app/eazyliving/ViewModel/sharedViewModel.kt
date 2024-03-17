@@ -12,6 +12,8 @@ import com.app.eazyliving.model.SensorData
 import com.app.eazyliving.network.ApiCalls
 import com.app.eazyliving.network.Cookies.decodeJWTAndExtractData
 import com.app.eazyliving.network.Retrofit
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 
@@ -81,7 +83,40 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
             }
         }
     }
+
+    fun updateSensors(sensorName: String, newState: Boolean) {
+        viewModelScope.launch {
+            val success = apiCalls.updateSensors(sensorName, newState)
+            if (success) {
+                // Optionally refresh sensor data from the server to ensure UI is in sync
+                getSensors()
+            } else {
+                // Handle failure (e.g., by logging or showing an error message)
+                Log.e("SharedViewModel", "Failed to update sensor state for $sensorName")
+            }
+        }
+    }
+
+    fun startSensorUpdates() {
+        viewModelScope.launch {
+            while (isActive) {  // Keeps this coroutine running as long as it's active
+                try {
+                    val fetchedSensors = apiCalls.getSensors()
+                    if (fetchedSensors != null) {
+                        _sensors.postValue(fetchedSensors!!)
+                    }
+                    delay(5000)  // Wait for 5 seconds before refreshing again (you can adjust this value)
+                } catch (e: Exception) {
+                    Log.e("SharedViewModel", "Error fetching sensors", e)
+                }
+            }
+        }
+    }
+
+
+
 }
+
 
 sealed class LoginState {
     object Idle : LoginState()

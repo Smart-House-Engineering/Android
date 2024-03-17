@@ -1,10 +1,8 @@
 package com.app.eazyliving.network
 
 import android.util.Log
-import com.app.eazyliving.model.Devices
 import com.app.eazyliving.model.LoginCredentials
 import com.app.eazyliving.model.SensorData
-import com.app.eazyliving.model.User
 import okhttp3.ResponseBody
 
 class ApiCalls(private val apiService: ApiService) {
@@ -81,18 +79,14 @@ class ApiCalls(private val apiService: ApiService) {
         }
     }
 
-    suspend fun updateSensors(): Devices? {
+    suspend fun updateSensors(sensorName: String, newState: Boolean): Boolean  {
+
         return try {
-            val response = apiService.updateSensors()
-            if (response.isSuccessful) {
-                response.body() // Returns Devices object if successful.
-            } else {
-                // Handle unsuccessful request by displaying an error message to the user.
-                null
-            }
+            val requestBody = mapOf("sensorName" to sensorName, "newState" to newState)
+            val response = apiService.updateSensors(requestBody)
+            response.isSuccessful
         } catch (e: Exception) {
-            // Handle errors by displaying an error message.
-            null
+            false
         }
     }
 }
