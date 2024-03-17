@@ -88,10 +88,10 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
         viewModelScope.launch {
             val success = apiCalls.updateSensors(sensorName, newState)
             if (success) {
-                // Optionally refresh sensor data from the server to ensure UI is in sync
+
                 getSensors()
             } else {
-                // Handle failure (e.g., by logging or showing an error message)
+                // Handle failure
                 Log.e("SharedViewModel", "Failed to update sensor state for $sensorName")
             }
         }

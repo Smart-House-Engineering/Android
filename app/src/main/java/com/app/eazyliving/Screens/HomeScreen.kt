@@ -31,18 +31,18 @@ import com.app.eazyliving.ViewModel.SharedViewModel
 fun HomeScreen(navController: NavHostController,
                sharedViewModel: SharedViewModel = viewModel()) {
     val userEmail by sharedViewModel.userEmail.observeAsState()
-  val userRole by sharedViewModel.userRole.observeAsState()
-//    val sensors by sharedViewModel.sensors.observeAsState(emptyList())
+    val userRole by sharedViewModel.userRole.observeAsState()
+    val sensors by sharedViewModel.sensors.observeAsState(emptyList())
     LaunchedEffect(Unit) {
         sharedViewModel.startSensorUpdates()
     }
-    val sensors = remember {
-        mutableStateListOf(
-            SensorData("Light", false),
-            SensorData("Fan", false),
-            // Add more sensors as needed
-        )
-    }
+//    val sensors = remember {
+//        mutableStateListOf(
+//            SensorData("Light", false),
+//            SensorData("Fan", false),
+//            // Add more sensors as needed
+//        )
+//    }
 
     Log.d("HomeScreen", "User Email: $userEmail")
     Log.d("HomeScreen", "User Role: $userRole")
@@ -87,10 +87,7 @@ fun HomeScreen(navController: NavHostController,
                                 }
                             ) {   newState ->
                         // Update the sensor state in the local list
-                        val index = sensors.indexOfFirst { it.sensorName == sensor.sensorName }
-                        if (index != -1) {
-                            sensors[index] = sensors[index].copy(switchState = newState)
-                        }
+                        sharedViewModel.updateSensors(sensor.sensorName, newState)
 
                         Log.d("SensorSwitch", "Sensor ${sensor.sensorName} state changed to $newState")
                     }
