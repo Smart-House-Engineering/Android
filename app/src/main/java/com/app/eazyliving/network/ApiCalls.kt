@@ -27,23 +27,23 @@ class ApiCalls(private val apiService: ApiService) {
             }
      */
 
-//    suspend fun login(loginCredentials: LoginCredentials): ResponseBody? {
-//        return try {
-//            val response = apiService.login(loginCredentials)
-//            println("response: $response")
-//
-//            if (response.isSuccessful) {
-//                response.body()  // returns status 200 or okay if successful
-//            } else {
-//                println("Error response: ${response.errorBody()?.string()}")
-//                // Handle unsuccessful login by displaying an error message to the user.
-//                null
-//            }
-//        } catch (e: Exception) {
-//            // Handle errors by displaying an error message.
-//            null
-//        }
-//    }
+    suspend fun login(loginCredentials: LoginCredentials): ResponseBody? {
+        return try {
+            val response = apiService.login(loginCredentials)
+            println("response: $response")
+
+            if (response.isSuccessful) {
+                response.body()  // returns status 200 or okay if successful
+            } else {
+                println("Error response: ${response.errorBody()?.string()}")
+                // Handle unsuccessful login by displaying an error message to the user.
+                null
+            }
+        } catch (e: Exception) {
+            // Handle errors by displaying an error message.
+            null
+        }
+    }
 
     suspend fun logout() {
         try {
@@ -81,9 +81,9 @@ class ApiCalls(private val apiService: ApiService) {
         }
     }
 
-    suspend fun updateSensors(sensorUpdate: SensorUpdate): Devices? {
+    suspend fun updateSensors(): Devices? {
         return try {
-            val response = apiService.updateSensors(sensorUpdate)
+            val response = apiService.updateSensors()
             if (response.isSuccessful) {
                 response.body() // Returns Devices object if successful.
             } else {

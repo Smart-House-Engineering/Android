@@ -45,20 +45,21 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.app.eazyliving.R
 import com.app.eazyliving.ViewModel.LoginState
-import com.app.eazyliving.ViewModel.LoginViewModel
+import com.app.eazyliving.ViewModel.SharedViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun LoginScreen(navController: NavController,loginViewModel: LoginViewModel = viewModel()) {
+fun LoginScreen(navController: NavHostController, sharedViewModel: SharedViewModel = viewModel()) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
-    val loginState by loginViewModel.loginState.observeAsState()
-    val navigationDestination by loginViewModel.navigationDestination.observeAsState()
+    val loginState by sharedViewModel.loginState.observeAsState()
+    val navigationDestination by sharedViewModel.navigationDestination.observeAsState()
 
     LaunchedEffect(navigationDestination) {
         navigationDestination?.let { destination ->
@@ -114,7 +115,7 @@ fun LoginScreen(navController: NavController,loginViewModel: LoginViewModel = vi
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(
-            onClick = {  loginViewModel.login(email, password)},
+            onClick = {  sharedViewModel.login(email, password)},
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(61,122,172)
             ),

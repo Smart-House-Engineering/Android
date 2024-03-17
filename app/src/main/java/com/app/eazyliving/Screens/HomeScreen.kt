@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.app.eazyliving.ViewModel.LoginViewModel
 import com.app.eazyliving.components.Header
 import com.app.eazyliving.components.SensorCard
 import com.app.eazyliving.components.UserCard
@@ -25,14 +24,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.app.eazyliving.R
-import com.app.eazyliving.ViewModel.HomeViewModel
+import com.app.eazyliving.ViewModel.SharedViewModel
 
-@SuppressLint("RememberReturnType")
 @Composable
-fun HomeScreen(navController: NavHostController, loginViewModel: LoginViewModel = viewModel(), homeViewModel: HomeViewModel = viewModel()) {
-    val userEmail by loginViewModel.userEmail.observeAsState()
-    val userRole by loginViewModel.userRole.observeAsState()
-    val sensors by homeViewModel.sensors.observeAsState(emptyList())
+fun HomeScreen(navController: NavHostController,
+               sharedViewModel: SharedViewModel = viewModel()) {
+    val userEmail by sharedViewModel.userEmail.observeAsState()
+  val userRole by sharedViewModel.userRole.observeAsState()
+    val sensors by sharedViewModel.sensors.observeAsState(emptyList())
 //    val sensors = remember {
 //        mutableStateListOf(
 //            SensorData("Light", false),
@@ -57,7 +56,7 @@ fun HomeScreen(navController: NavHostController, loginViewModel: LoginViewModel 
                 modifier = Modifier
                     .fillMaxWidth()
             ){
-                UserCard(userEmail = userEmail, userRole = userRole)
+              UserCard(userEmail = userEmail, userRole = userRole)
                 Spacer(modifier = Modifier.width(16.dp))
                 DateCard()
             }
@@ -68,8 +67,7 @@ fun HomeScreen(navController: NavHostController, loginViewModel: LoginViewModel 
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
             ) {
-                items(sensors.size) { index ->
-                    val sensor = sensors[index]
+                items(items = sensors , key = { sensor -> sensor.sensorName }) { sensor ->
                     SensorCard(
                         sensorName = sensor.sensorName,
                         switchState = sensor.switchState,
@@ -82,12 +80,10 @@ fun HomeScreen(navController: NavHostController, loginViewModel: LoginViewModel 
                                         )
                                     }
                                 }
-                            ) { newState ->sensors[index] = sensor.copy(switchState = newState)
-                                Log.d(
-                                    "SensorSwitch",
-                                    "Sensor ${sensor.sensorName} state changed to $newState"
-                                )
-                            }
+                            ) {  newState ->
+
+                        Log.d("SensorSwitch", "Sensor ${sensor.sensorName} state changed to $newState")
+                    }
                             Spacer(modifier = Modifier.height(8.dp)) // Add some space between sensor cards
                         }
                     }

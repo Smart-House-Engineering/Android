@@ -9,26 +9,28 @@ import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModelProvider
 import com.app.eazyliving.Navigation.Navigation
-import com.app.eazyliving.ViewModel.LoginViewModel
+import com.app.eazyliving.ViewModel.SharedViewModelFactory
+import com.app.eazyliving.network.ApiCalls
 import com.app.eazyliving.network.Retrofit
+import com.app.eazyliving.network.Retrofit.apiService
 import com.app.eazyliving.ui.theme.EazyLivingTheme
 
 class MainActivity : ComponentActivity() {
-    private lateinit var viewModel: LoginViewModel
+    val apiCalls = ApiCalls( apiService) // Initialize your ApiCalls here
+    val sharedViewModelFactory = SharedViewModelFactory(apiCalls)
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Retrofit.initialize(this)
-        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+
         setContent {
             EazyLivingTheme {
                 Surface(
                     modifier = Modifier.wrapContentSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Navigation()
+                    Navigation(sharedViewModelFactory)
                 }
             }
         }
