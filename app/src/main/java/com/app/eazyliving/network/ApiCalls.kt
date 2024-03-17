@@ -27,7 +27,7 @@ class ApiCalls(private val apiService: ApiService) {
 
     suspend fun login(loginCredentials: LoginCredentials): ResponseBody? {
         return try {
-            val response = apiService.login(loginCredentials)
+            val response = Retrofit.apiService.login(loginCredentials)
             println("response: $response")
 
             if (response.isSuccessful) {
@@ -58,7 +58,7 @@ class ApiCalls(private val apiService: ApiService) {
 
     suspend fun getSensors(): List<SensorData>? {
         return try {
-            val response = apiService.getSensors()
+            val response = Retrofit.apiService.getSensors()
             Log.d("Sensors", response.toString())
             if (response.isSuccessful) {
 

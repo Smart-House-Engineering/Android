@@ -17,13 +17,13 @@ import com.app.eazyliving.network.Retrofit.apiService
 import com.app.eazyliving.ui.theme.EazyLivingTheme
 
 class MainActivity : ComponentActivity() {
-    val apiCalls = ApiCalls( apiService) // Initialize your ApiCalls here
-    val sharedViewModelFactory = SharedViewModelFactory(apiCalls)
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Retrofit.initialize(this)
-
+       val apiCalls = ApiCalls( apiService) // Initialize your ApiCalls here
+       val sharedViewModelFactory = SharedViewModelFactory(apiCalls)
         setContent {
             EazyLivingTheme {
                 Surface(

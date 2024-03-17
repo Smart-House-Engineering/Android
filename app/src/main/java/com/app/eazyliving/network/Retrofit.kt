@@ -1,6 +1,8 @@
 package com.app.eazyliving.network
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import com.app.eazyliving.network.Cookies.AddCookiesInterceptor
 import com.app.eazyliving.network.Cookies.ReceivedCookiesInterceptor
 import okhttp3.OkHttpClient
@@ -21,11 +23,16 @@ import retrofit2.Retrofit
  */
 
 object Retrofit {
-    private var cookieInterceptor: ReceivedCookiesInterceptor? = null
-    private var addCookiesInterceptor: AddCookiesInterceptor? = null
+
+    @SuppressLint("StaticFieldLeak")
+    private lateinit var cookieInterceptor: ReceivedCookiesInterceptor
+    @SuppressLint("StaticFieldLeak")
+    private lateinit var addCookiesInterceptor: AddCookiesInterceptor
+
     fun initialize(context: Context) {
         cookieInterceptor = ReceivedCookiesInterceptor(context)
         addCookiesInterceptor = AddCookiesInterceptor(context)
+
     }
     private const val BASE_URL = "https://evanescent-beautiful-venus.glitch.me/"
     val apiService: ApiService by lazy {
@@ -33,9 +40,13 @@ object Retrofit {
         cookieInterceptor?.let {
             clientBuilder.addInterceptor(it)
         }
-        if (addCookiesInterceptor != null) {
-            clientBuilder.addInterceptor(addCookiesInterceptor!!)
+        addCookiesInterceptor?.let {
+            clientBuilder.addInterceptor(it)
         }
+        Log.d("Received Cookie interceptor", cookieInterceptor.toString())
+        Log.d("Add Cookie interceptor", addCookiesInterceptor.toString())
+        Log.d("client builder", clientBuilder.toString())
+
         val okHttpClient = clientBuilder.build()
         val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)

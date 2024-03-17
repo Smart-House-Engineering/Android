@@ -72,11 +72,11 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
         _navigationDestination.value = null
     }
 
-    fun getSensors() {
+   fun getSensors() {
         viewModelScope.launch {
             try {
-                val fetchedSensors = apiCalls.getSensors() ?: emptyList()
-                _sensors.postValue(fetchedSensors)
+                val fetchedSensors = Retrofit.apiService.getSensors()
+                _sensors.postValue(fetchedSensors as List<SensorData>?)
             } catch (e: Exception) {
                 Log.e("SharedViewModel", "Error fetching sensors", e)
                 _sensors.postValue(emptyList())
