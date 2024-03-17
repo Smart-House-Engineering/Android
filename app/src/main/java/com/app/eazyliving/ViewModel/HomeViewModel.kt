@@ -18,28 +18,26 @@ class HomeViewModel(private val repository: ApiService) : ViewModel() {
     init {
         getSensors()
     }
-
     private fun getSensors() {
         viewModelScope.launch {
             try {
-                val response = repository.getSensors()  // Ensure this matches the actual function signature
+                val response = repository.getSensors()
                 if (response.isSuccessful) {
-                    val devices = response.body()  // This should be a Devices object or List<Devices>
+                    val devices = response.body()
                     val sensorDataList = devices?.let {
                         listOf(
-                            SensorData("Fan", it.fan),
-                            SensorData("Yellow LED", it.yellowLed > 0)  // Assuming these properties exist
-                            // Convert other device states as needed
+                            SensorData("Yellow LED", it.yellowLed > 0),
+                            SensorData("Fan", it.fan)
+
                         )
                     }
-                    _sensors.value = sensorDataList ?: listOf()  // Update LiveData with the converted list
+                    _sensors.value = sensorDataList ?: listOf()
                 } else {
                     Log.e("HomeViewModel", "Failed to fetch sensors: ${response.errorBody()?.string()}")
-                    // Optionally update LiveData to indicate the error state
                 }
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error fetching sensors", e)
-                // Optionally update LiveData to indicate the error state
+
             }
         }
     }

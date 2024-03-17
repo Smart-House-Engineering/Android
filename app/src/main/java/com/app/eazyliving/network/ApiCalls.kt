@@ -1,5 +1,6 @@
 package com.app.eazyliving.network
 
+import android.util.Log
 import com.app.eazyliving.model.Devices
 import com.app.eazyliving.model.LoginCredentials
 import com.app.eazyliving.model.SensorData
@@ -69,7 +70,7 @@ class ApiCalls(private val apiService: ApiService) {
                     )
                     }
             } else {
-                // Handle unsuccessful request by displaying an error message to the user.
+                throw Exception("Failed to fetch sensors: ${response.errorBody()?.string()}")
                 null
             }
         } catch (e: Exception) {
