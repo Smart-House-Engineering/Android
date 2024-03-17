@@ -1,6 +1,7 @@
 package com.app.eazyliving.Screens
 
 import BottomBar
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -25,16 +26,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.app.eazyliving.R
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun HomeScreen(navController: NavHostController, loginViewModel: LoginViewModel = viewModel()) {
     val userEmail by loginViewModel.userEmail.observeAsState()
     val userRole by loginViewModel.userRole.observeAsState()
 
-    val sensors = listOf(
-        SensorData("Light", false),
-        SensorData("Fan",  false),
-        // Add more sensors as needed
-    )
+    val sensors = remember {
+        mutableStateListOf(
+            SensorData("Light", false),
+            SensorData("Fan", false),
+            // Add more sensors as needed
+        )
+    }
 
     Log.d("HomeScreen", "User Email: $userEmail")
     Log.d("HomeScreen", "User Role: $userRole")
@@ -63,11 +67,12 @@ fun HomeScreen(navController: NavHostController, loginViewModel: LoginViewModel 
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
             ) {
-                        items(sensors) { sensor ->
-                            SensorCard(
-                                sensorName = sensor.sensorName,
-                                switchState = sensor.switchState,
-                                sensorIcon = {
+                items(sensors.size) { index ->
+                    val sensor = sensors[index]
+                    SensorCard(
+                        sensorName = sensor.sensorName,
+                        switchState = sensor.switchState,
+                        sensorIcon = {
                                     when (sensor.sensorName) {
                                         "Light" -> Icon(imageVector = Icons.Filled.Lightbulb, contentDescription = "Light")
                                         "Fan" ->Image( painterResource(R.drawable.fan), contentDescription = "Fan",
@@ -76,7 +81,7 @@ fun HomeScreen(navController: NavHostController, loginViewModel: LoginViewModel 
                                         )
                                     }
                                 }
-                            ) { newState ->
+                            ) { newState ->sensors[index] = sensor.copy(switchState = newState)
                                 Log.d(
                                     "SensorSwitch",
                                     "Sensor ${sensor.sensorName} state changed to $newState"
