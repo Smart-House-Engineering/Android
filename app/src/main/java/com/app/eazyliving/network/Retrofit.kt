@@ -1,6 +1,7 @@
 package com.app.eazyliving.network
 
 import android.content.Context
+import com.app.eazyliving.network.Cookies.AddCookiesInterceptor
 import com.app.eazyliving.network.Cookies.ReceivedCookiesInterceptor
 import okhttp3.OkHttpClient
 import retrofit2.converter.gson.GsonConverterFactory
@@ -21,14 +22,19 @@ import retrofit2.Retrofit
 
 object Retrofit {
     private var cookieInterceptor: ReceivedCookiesInterceptor? = null
+    private var addCookiesInterceptor: AddCookiesInterceptor? = null
     fun initialize(context: Context) {
         cookieInterceptor = ReceivedCookiesInterceptor(context)
+        addCookiesInterceptor = AddCookiesInterceptor(context)
     }
     private const val BASE_URL = "https://evanescent-beautiful-venus.glitch.me/"
     val apiService: ApiService by lazy {
         val clientBuilder = OkHttpClient.Builder()
         cookieInterceptor?.let {
             clientBuilder.addInterceptor(it)
+        }
+        if (addCookiesInterceptor != null) {
+            clientBuilder.addInterceptor(addCookiesInterceptor!!)
         }
         val okHttpClient = clientBuilder.build()
         val retrofit = Retrofit.Builder()
