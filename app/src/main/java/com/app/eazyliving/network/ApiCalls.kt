@@ -2,6 +2,7 @@ package com.app.eazyliving.network
 
 import com.app.eazyliving.model.Devices
 import com.app.eazyliving.model.LoginCredentials
+import com.app.eazyliving.model.SensorData
 import com.app.eazyliving.model.User
 import okhttp3.ResponseBody
 
@@ -56,11 +57,17 @@ class ApiCalls(private val apiService: ApiService) {
         }
     }
 
-    suspend fun getSensors(): List<Devices>? {
+    suspend fun getSensors(): List<SensorData>? {
         return try {
             val response = apiService.getSensors()
             if (response.isSuccessful) {
-                response.body() // Returns list of Devices if successful.
+                val devices = response.body()
+                devices?.let {
+                    listOf(
+                        SensorData("fan", it.fan),
+                        SensorData("yellow LED", it.yellowLed> 0)
+                    )
+                    }
             } else {
                 // Handle unsuccessful request by displaying an error message to the user.
                 null
