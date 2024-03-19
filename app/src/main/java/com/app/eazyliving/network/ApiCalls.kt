@@ -1,9 +1,13 @@
 package com.app.eazyliving.network
 
 import android.util.Log
+import com.app.eazyliving.model.DeviceList
+import com.app.eazyliving.model.Devices
 import com.app.eazyliving.model.LoginCredentials
 import com.app.eazyliving.model.SensorData
 import okhttp3.ResponseBody
+import retrofit2.Response
+import kotlin.reflect.full.memberProperties
 
 class ApiCalls(private val apiService: ApiService) {
     /*
@@ -56,37 +60,44 @@ class ApiCalls(private val apiService: ApiService) {
         }
     }
 
-    suspend fun getSensors(): List<SensorData>? {
-        return try {
-            val response = Retrofit.apiService.getSensors()
-            Log.d("Sensors", response.toString())
-            if (response.isSuccessful) {
 
-                val devices = response.body()
-                devices?.let {
-                    listOf(
-                        SensorData("fan", it.fan),
-                        SensorData("yellow LED", it.yellowLed> 0)
-                    )
+    suspend fun getSensors(): List<SensorData>? {
+        val response = Retrofit.apiService.getSensors()
+        Log.d("Sensors", response.toString())
+        return try {
+
+            if (response.isSuccessful) {
+                val devices = response.body() // This should be of type Devices
+                devices?.let { device ->
+                    val sensorsList = mutableListOf<SensorData>()
+                    Devices::class.memberProperties.forEach { property ->
+                        val sensorName = property.name
+                        val value = property.get(device)
+                        when (value) {
+                            is Boolean -> sensorsList.add(SensorData(sensorName, value))
+                            is Int -> sensorsList.add(SensorData(sensorName, value > 0)) // Convert Int to Boolean; assume nonzero means "true"
+                        }
                     }
+                    return sensorsList // Return the constructed list of SensorData
+                }
+                null // Return null if devices is null
             } else {
                 throw Exception("Failed to fetch sensors: ${response.errorBody()?.string()}")
-                null
             }
         } catch (e: Exception) {
-            // Handle errors by displaying an error message.
-            null
+            Log.e("SensorsError", "Error fetching sensors", e)
+            null // Return null on exception
         }
     }
 
-    suspend fun updateSensors(sensorName: String, newState: Boolean): Boolean  {
-
-        return try {
-            val requestBody = mapOf("sensorName" to sensorName, "newState" to newState)
-            val response = apiService.updateSensors(requestBody)
-            response.isSuccessful
-        } catch (e: Exception) {
-            false
-        }
-    }
+//    suspend fun updateSensors(): Boolean  {
+//
+//        return try {
+//            val requestBody = mapOf("sensorName" to sensorName, "newState" to newState)
+//            val response = apiService.updateSensors( )
+//            response.isSuccessful
+//        } catch (e: Exception) {
+//            false
+//        }
+//    }
 }

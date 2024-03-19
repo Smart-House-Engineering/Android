@@ -1,5 +1,6 @@
 package com.app.eazyliving.network
 
+import com.app.eazyliving.model.DeviceList
 import com.app.eazyliving.model.Devices
 import com.app.eazyliving.model.LoginCredentials
 import okhttp3.ResponseBody
@@ -23,5 +24,5 @@ interface ApiService {
     suspend fun logout(): Response<Unit> // <- Unit is the return type of a void function
 
     @PUT("/api/homeUser/defaultMode")
-    suspend fun updateSensors(@Body requestBody: Map<String, Any>): Response<Boolean>// <- TODO: fix this thing
+    suspend fun updateSensors(@Body devices: DeviceList): Response<Boolean>// <- TODO: fix this thing
 }

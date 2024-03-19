@@ -36,13 +36,6 @@ fun HomeScreen(navController: NavHostController,
     LaunchedEffect(Unit) {
         sharedViewModel.startSensorUpdates()
     }
-//    val sensors = remember {
-//        mutableStateListOf(
-//            SensorData("Light", false),
-//            SensorData("Fan", false),
-//            // Add more sensors as needed
-//        )
-//    }
 
     Log.d("HomeScreen", "User Email: $userEmail")
     Log.d("HomeScreen", "User Role: $userRole")
@@ -72,17 +65,22 @@ fun HomeScreen(navController: NavHostController,
                     .padding(vertical = 8.dp)
             ) {
                 items(items = sensors, key = { sensor -> sensor.sensorName }) { sensor ->
-
+                    Log.d("sensorData", sensor.toString())
                     SensorCard(
                         sensorName = sensor.sensorName,
                         switchState = sensor.switchState,
                         sensorIcon = {
                                     when (sensor.sensorName) {
-                                        "Light" -> Icon(imageVector = Icons.Filled.Lightbulb, contentDescription = "Light")
-                                        "Fan" ->Image( painterResource(R.drawable.fan), contentDescription = "Fan",
+
+                                        "yellow LED" ->Image( painterResource(R.drawable.yellowled), contentDescription = "yellowLed",
                                             modifier = Modifier.size(24.dp),
                                             contentScale = ContentScale.Fit
                                         )
+                                        "fan" ->Image( painterResource(R.drawable.fan), contentDescription = "Fan",
+                                            modifier = Modifier.size(24.dp),
+                                            contentScale = ContentScale.Fit
+                                        )
+
                                     }
                                 }
                             ) {   newState ->

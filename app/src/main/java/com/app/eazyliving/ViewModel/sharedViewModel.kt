@@ -7,6 +7,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.eazyliving.model.DeviceList
+import com.app.eazyliving.model.Devices
 import com.app.eazyliving.model.LoginCredentials
 import com.app.eazyliving.model.SensorData
 import com.app.eazyliving.network.ApiCalls
@@ -18,6 +20,7 @@ import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 
 class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
+    private var currentDevices: DeviceList? = null
 
     private val _loginState = MutableLiveData<LoginState>()
     val loginState: LiveData<LoginState> = _loginState
@@ -86,13 +89,26 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
 
     fun updateSensors(sensorName: String, newState: Boolean) {
         viewModelScope.launch {
-            val success = apiCalls.updateSensors(sensorName, newState)
-            if (success) {
 
-                getSensors()
-            } else {
-                // Handle failure
-                Log.e("SharedViewModel", "Failed to update sensor state for $sensorName")
+            val updatedSensors = currentDevices?.sensors?.map { device ->
+                if (device.sensorName == sensorName) {
+                    device.copy(switchState = newState)
+                } else {
+                    device
+                }
+            }
+            val updatedDevices = updatedSensors?.let { DeviceList(it) }
+
+            // Send updated devices to the server
+            val response = updatedDevices?.let { Retrofit.apiService.updateSensors(it) }
+            if (response != null) {
+                if (response.isSuccessful && response.body() == true) {
+                    // Update local data as necessary, based on successful update
+                    currentDevices = updatedDevices
+                } else {
+                    // Handle failure
+                    Log.e("ViewModel", "Failed to update sensor state.")
+                }
             }
         }
     }
