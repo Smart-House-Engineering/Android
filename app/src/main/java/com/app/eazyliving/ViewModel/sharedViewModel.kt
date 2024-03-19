@@ -11,6 +11,7 @@ import com.app.eazyliving.model.DeviceList
 import com.app.eazyliving.model.Devices
 import com.app.eazyliving.model.LoginCredentials
 import com.app.eazyliving.model.SensorData
+import com.app.eazyliving.model.toSensorDataList
 import com.app.eazyliving.network.ApiCalls
 import com.app.eazyliving.network.Cookies.decodeJWTAndExtractData
 import com.app.eazyliving.network.Retrofit
@@ -75,10 +76,11 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
         _navigationDestination.value = null
     }
 
+
    fun getSensors() {
         viewModelScope.launch {
             try {
-                val fetchedSensors = Retrofit.apiService.getSensors()
+                val fetchedSensors = apiCalls.getSensors()
                 _sensors.postValue(fetchedSensors as List<SensorData>?)
             } catch (e: Exception) {
                 Log.e("SharedViewModel", "Error fetching sensors", e)
@@ -89,29 +91,43 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
 
     fun updateSensors(sensorName: String, newState: Boolean) {
         viewModelScope.launch {
-
-            val updatedSensors = currentDevices?.sensors?.map { device ->
-                if (device.sensorName == sensorName) {
-                    device.copy(switchState = newState)
+            val preliminaryUpdatedSensors = currentDevices?.sensors?.map { sensor ->
+                if (sensor.sensorName == sensorName) {
+                    sensor.copy(switchState = newState)
                 } else {
-                    device
+                    sensor
                 }
             }
-            val updatedDevices = updatedSensors?.let { DeviceList(it) }
 
-            // Send updated devices to the server
-            val response = updatedDevices?.let { Retrofit.apiService.updateSensors(it) }
-            if (response != null) {
-                if (response.isSuccessful && response.body() == true) {
-                    // Update local data as necessary, based on successful update
-                    currentDevices = updatedDevices
+            _sensors.value = preliminaryUpdatedSensors ?: listOf()
+
+            // Prepare and send the update to the server
+            val updatedDevicesMap = mapOf("updatedDevices" to DeviceList(preliminaryUpdatedSensors ?: listOf()))
+            try {
+                val response = Retrofit.apiService.updateSensors(updatedDevicesMap)
+                if (response.isSuccessful && response.body() != null) {
+                    // Extract and utilize the updated sensors from the server response
+                    val serverUpdatedDevices = response.body()?.updatedHome?.devices
+                    serverUpdatedDevices?.let {
+                        // Convert Devices to List<SensorData> and update _sensors LiveData
+                        val sensorDataList = it.toSensorDataList()
+                        _sensors.value = sensorDataList
+
+                        // Create a new DeviceList with the updated List<SensorData> and assign it to currentDevices
+                        currentDevices = DeviceList(sensorDataList)
+                    }
                 } else {
-                    // Handle failure
-                    Log.e("ViewModel", "Failed to update sensor state.")
+                    Log.e("ViewModel", "Failed to update sensor state. Error: ${response.errorBody()?.string()}")
+                    _sensors.value = currentDevices?.sensors
                 }
+            } catch (e: Exception) {
+                Log.e("ViewModel", "Network error or serialization issue when updating sensors", e)
+                _sensors.value = currentDevices?.sensors
             }
         }
     }
+
+
 
     fun startSensorUpdates() {
         viewModelScope.launch {

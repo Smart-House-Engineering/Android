@@ -6,6 +6,9 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -23,47 +26,53 @@ import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material3.Icon
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewModelScope
 import com.app.eazyliving.R
 import com.app.eazyliving.ViewModel.SharedViewModel
+import kotlinx.coroutines.launch
 
-@SuppressLint("SuspiciousIndentation")
+
 @Composable
 fun HomeScreen(navController: NavHostController,
                sharedViewModel: SharedViewModel = viewModel()) {
     val userEmail by sharedViewModel.userEmail.observeAsState()
     val userRole by sharedViewModel.userRole.observeAsState()
-    val sensors by sharedViewModel.sensors.observeAsState(emptyList())
+    val sensors by sharedViewModel.sensors.observeAsState(initial = emptyList())
     LaunchedEffect(Unit) {
-        sharedViewModel.startSensorUpdates()
+        sharedViewModel.getSensors()
     }
 
-    Log.d("HomeScreen", "User Email: $userEmail")
-    Log.d("HomeScreen", "User Role: $userRole")
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-        ) {
-            Header()
-            Row (
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ){
-              UserCard(userEmail = userEmail, userRole = userRole)
-                Spacer(modifier = Modifier.width(16.dp))
-                DateCard()
-            }
-            var switchState by remember { mutableStateOf(false) }
+    Column(modifier = Modifier.fillMaxSize()) {
+        Header()
+        UserInfoRow(userEmail, userRole)
+        SensorsGrid(sensors, sharedViewModel)
+        BottomNavigation()
+    }
+}
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
+@Composable
+fun UserInfoRow(userEmail: String?, userRole: String?) {
+
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        UserCard(userEmail = userEmail, userRole = userRole)
+        Spacer(modifier = Modifier.width(16.dp))
+        DateCard()
+    }
+}
+
+@Composable
+fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
                 items(items = sensors, key = { sensor -> sensor.sensorName }) { sensor ->
                     Log.d("sensorData", sensor.toString())
                     SensorCard(
@@ -80,19 +89,18 @@ fun HomeScreen(navController: NavHostController,
                                             modifier = Modifier.size(24.dp),
                                             contentScale = ContentScale.Fit
                                         )
-
                                     }
                                 }
-                            ) {   newState ->
-                        // Update the sensor state in the local list
+                            )  { newState ->
                         sharedViewModel.updateSensors(sensor.sensorName, newState)
-
                         Log.d("SensorSwitch", "Sensor ${sensor.sensorName} state changed to $newState")
                     }
                             Spacer(modifier = Modifier.height(8.dp)) // Add some space between sensor cards
                         }
                     }
         }
+@Composable
+fun BottomNavigation() {
         BottomBar(
             onHomeClick = { /* Handle Home click */ },
             onUserClick = { /* Handle User click */ },
@@ -100,5 +108,5 @@ fun HomeScreen(navController: NavHostController,
             onLogoutClick = { /* Handle Logout click */ }
         )
     }
-}
+
 
