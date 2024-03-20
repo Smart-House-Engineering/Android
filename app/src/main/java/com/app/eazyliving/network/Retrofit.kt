@@ -6,6 +6,7 @@ import android.util.Log
 import com.app.eazyliving.network.Cookies.AddCookiesInterceptor
 import com.app.eazyliving.network.Cookies.ReceivedCookiesInterceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.Retrofit
 
@@ -36,7 +37,9 @@ object Retrofit {
     }
     private const val BASE_URL = "https://evanescent-beautiful-venus.glitch.me/"
     val apiService: ApiService by lazy {
+        val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         val clientBuilder = OkHttpClient.Builder()
+        clientBuilder.addInterceptor(logging)
         cookieInterceptor?.let {
             clientBuilder.addInterceptor(it)
         }

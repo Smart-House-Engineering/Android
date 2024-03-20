@@ -1,6 +1,5 @@
 package com.app.eazyliving.network
 
-import com.app.eazyliving.model.DeviceList
 import com.app.eazyliving.model.Devices
 import com.app.eazyliving.model.LoginCredentials
 import com.app.eazyliving.model.UpdateResponse
@@ -25,5 +24,6 @@ interface ApiService {
     suspend fun logout(): Response<Unit> // <- Unit is the return type of a void function
 
     @PUT("/api/homeUser/defaultMode")
-    suspend fun updateSensors(@Body updatedDevices: Map<String, DeviceList>): Response<UpdateResponse>// <- TODO: fix this thing
+    @JvmSuppressWildcards
+    suspend fun updateSensors(@Body updatedDevices: Map<String, Map<String, Any>>): Response<UpdateResponse>// <- TODO: fix this thing
 }

@@ -24,8 +24,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.eazyliving.R
 import com.app.eazyliving.ViewModel.SharedViewModel
@@ -73,32 +76,39 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-                items(items = sensors, key = { sensor -> sensor.sensorName }) { sensor ->
-                    Log.d("sensorData", sensor.toString())
-                    SensorCard(
-                        sensorName = sensor.sensorName,
-                        switchState = sensor.switchState,
-                        sensorIcon = {
-                                    when (sensor.sensorName) {
+        if (sensors.isNotEmpty()) {
+            items(items = sensors, key = { sensor -> sensor.sensorName }) { sensor ->
+                Log.d("sensorData", sensor.toString())
 
-                                        "yellow LED" ->Image( painterResource(R.drawable.yellowled), contentDescription = "yellowLed",
-                                            modifier = Modifier.size(24.dp),
-                                            contentScale = ContentScale.Fit
-                                        )
-                                        "fan" ->Image( painterResource(R.drawable.fan), contentDescription = "Fan",
-                                            modifier = Modifier.size(24.dp),
-                                            contentScale = ContentScale.Fit
-                                        )
-                                    }
-                                }
-                            )  { newState ->
-                        sharedViewModel.updateSensors(sensor.sensorName, newState)
-                        Log.d("SensorSwitch", "Sensor ${sensor.sensorName} state changed to $newState")
-                    }
-                            Spacer(modifier = Modifier.height(8.dp)) // Add some space between sensor cards
+                SensorCard(
+                    sensorName = sensor.sensorName,
+                    switchState = sensor.switchState,
+                    sensorIcon = {
+                        when (sensor.sensorName) {
+
+                            "yellow LED" -> Image(
+                                painterResource(R.drawable.yellowled),
+                                contentDescription = "yellowLed",
+                                modifier = Modifier.size(24.dp),
+                                contentScale = ContentScale.Fit
+                            )
+                            "fan" -> Image(
+                                painterResource(R.drawable.fan), contentDescription = "Fan",
+                                modifier = Modifier.size(24.dp),
+                                contentScale = ContentScale.Fit
+                            )
                         }
                     }
+                ) { newState ->
+                    sharedViewModel.updateSensors(sensor.sensorName, newState)
+                    Log.d("SensorSwitch", "Sensor ${sensor.sensorName} state changed to $newState")
+                }
+                Spacer(modifier = Modifier.height(8.dp)) // Add some space between sensor cards
+            }
+    }
         }
+    }
+
 @Composable
 fun BottomNavigation() {
         BottomBar(
