@@ -1,11 +1,9 @@
 package com.app.eazyliving.Screens
 
 import BottomBar
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -20,19 +18,10 @@ import com.app.eazyliving.components.SensorCard
 import com.app.eazyliving.components.UserCard
 import com.app.eazyliving.components.DateCard
 import com.app.eazyliving.model.SensorData
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.app.eazyliving.R
 import com.app.eazyliving.ViewModel.SharedViewModel
-import kotlinx.coroutines.launch
 
 
 @Composable
@@ -87,8 +76,8 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                     sensorIcon = {
                         when (sensor.sensorName) {
 
-                            "yellow LED" -> Image(
-                                painterResource(R.drawable.yellowled),
+                            "lights" -> Image(
+                                painterResource(R.drawable.lights),
                                 contentDescription = "yellowLed",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
