@@ -1,5 +1,10 @@
 package com.app.eazyliving.model
 
+data class DevicesResponse(
+    val message: String,
+    val devices: Devices
+)
+
 data class Devices(
     val fan: Boolean,
     val yellowLed: Int,

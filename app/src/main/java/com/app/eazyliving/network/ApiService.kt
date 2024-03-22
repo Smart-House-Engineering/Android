@@ -1,6 +1,7 @@
 package com.app.eazyliving.network
 
 import com.app.eazyliving.model.Devices
+import com.app.eazyliving.model.DevicesResponse
 import com.app.eazyliving.model.LoginCredentials
 import com.app.eazyliving.model.UpdateResponse
 import okhttp3.ResponseBody
@@ -15,7 +16,7 @@ import retrofit2.http.*
 
 interface ApiService {
     @GET("/api/modes/defaultMode")
-    suspend fun getSensors():Response<Devices> // <- returns list of Devices
+    suspend fun getSensors():Response<DevicesResponse> // <- returns list of Devices
 
     @POST("/auth/login")
     suspend fun login(@Body loginCredentials: LoginCredentials): Response<ResponseBody> // <- requires login credentials to be passed in the request body and returns a User object

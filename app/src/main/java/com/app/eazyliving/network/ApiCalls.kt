@@ -67,8 +67,9 @@ class ApiCalls(private val apiService: ApiService) {
         return try {
 
             if (response.isSuccessful) {
-                val devices = response.body() // This should be of type Devices
-                devices?.let { device ->
+                val devicesResponse = response.body() // This should be of type Devices
+                Log.d("test response", devicesResponse.toString())
+                devicesResponse?.devices?.let { device ->
                     val sensorsList = mutableListOf<SensorData>()
                     Devices::class.memberProperties.forEach { property ->
                         val sensorName = property.name

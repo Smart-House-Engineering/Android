@@ -78,10 +78,23 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
         viewModelScope.launch {
             try {
                 val fetchedSensors = apiCalls.getSensors()
+                Log.d("fetchedSensors", "Fetched sensors: $fetchedSensors")
+                if (fetchedSensors != null) {
+                    // Log individual sensor details for clarity
+                    fetchedSensors.forEach { sensor ->
+                        Log.d("SharedViewModel", "Sensor: ${sensor.sensorName}, State: ${sensor.switchState}")
+                    }
+                    Log.d("SharedViewModel", "Posting fetched sensors to LiveData: $fetchedSensors")
                 _sensors.postValue(fetchedSensors as List<SensorData>?)
+                } else {
+                    // If fetchedSensors is null, log this scenario
+                    Log.d("SharedViewModel", "Fetched sensors is null")
+                    _sensors.postValue(emptyList())
+                }
             } catch (e: Exception) {
                 Log.e("SharedViewModel", "Error fetching sensors", e)
                 _sensors.postValue(emptyList())
+
             }
         }
     }
@@ -150,7 +163,7 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
                     if (fetchedSensors != null) {
                         _sensors.postValue(fetchedSensors!!)
                     }
-                    delay(5000)  // Wait for 5 seconds before refreshing again (you can adjust this value)
+                    delay(20000)  // Wait for 5 seconds before refreshing again (you can adjust this value)
                 } catch (e: Exception) {
                     Log.e("SharedViewModel", "Error fetching sensors", e)
                 }

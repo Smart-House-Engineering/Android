@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -124,6 +125,14 @@ fun LoginScreen(navController: NavHostController, sharedViewModel: SharedViewMod
             Text("Login")
         }
         if (loginState is LoginState.Error) {
+            val errorMessage = (loginState as LoginState.Error).message
+            Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
+        }
+
+        if (loginState is LoginState.Loading) {
+            Spacer(modifier = Modifier.height(16.dp))
+            CircularProgressIndicator() // This displays the loading indicator
+        } else if (loginState is LoginState.Error) {
             val errorMessage = (loginState as LoginState.Error).message
             Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
         }
