@@ -5,8 +5,11 @@ import com.app.eazyliving.model.DeviceList
 import com.app.eazyliving.model.Devices
 import com.app.eazyliving.model.LoginCredentials
 import com.app.eazyliving.model.SensorData
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeout
 import okhttp3.ResponseBody
 import retrofit2.Response
+import java.util.concurrent.TimeoutException
 import kotlin.reflect.full.memberProperties
 
 class ApiCalls(private val apiService: ApiService) {
@@ -61,35 +64,46 @@ class ApiCalls(private val apiService: ApiService) {
     }
 
 
-    suspend fun getSensors(): List<SensorData>? {
-        val response = Retrofit.apiService.getSensors()
-        Log.d("Sensors", response.toString())
-        return try {
-
+suspend fun getSensors(): List<SensorData>? {
+    val maxRetries = 3
+    var currentRetry = 0
+    while (currentRetry < maxRetries) {
+        try {
+            // Set a timeout for the network request
+            val response = withTimeout(5000) {  // Timeout set to 5 seconds
+                Retrofit.apiService.getSensors()
+            }
+            Log.d("Sensors", "API response: $response")
             if (response.isSuccessful) {
-                val devicesResponse = response.body() // This should be of type Devices
-                Log.d("test response", devicesResponse.toString())
-                devicesResponse?.devices?.let { device ->
+                val devicesResponse = response.body()
+                Log.d("test response", "Devices data: ${devicesResponse?.devices}")
+                return devicesResponse?.devices?.let { device ->
                     val sensorsList = mutableListOf<SensorData>()
                     Devices::class.memberProperties.forEach { property ->
                         val sensorName = property.name
                         val value = property.get(device)
                         when (value) {
                             is Boolean -> sensorsList.add(SensorData(sensorName, value))
-                            is Int -> sensorsList.add(SensorData(sensorName, value > 0)) // Convert Int to Boolean; assume nonzero means "true"
+                            is Int -> sensorsList.add(SensorData(sensorName, value > 0))
                         }
                     }
-                    return sensorsList // Return the constructed list of SensorData
+                    sensorsList
                 }
-                null // Return null if devices is null
             } else {
-                throw Exception("Failed to fetch sensors: ${response.errorBody()?.string()}")
+                Log.e("SensorsError", "Failed to fetch sensors: ${response.errorBody()?.string()}")
             }
+        } catch (e: TimeoutException) {
+            Log.e("SensorsError", "Timeout while fetching sensors", e)
+
+            currentRetry++
+            delay(2000)
         } catch (e: Exception) {
-            Log.e("SensorsError", "Error fetching sensors", e)
-            null // Return null on exception
+            Log.e("SensorsError", "Exception while fetching sensors", e)
+            break
         }
     }
+    return null
+}
 
 //    suspend fun updateSensors(): Boolean  {
 //

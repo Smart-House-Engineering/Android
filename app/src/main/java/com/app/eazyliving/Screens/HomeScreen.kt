@@ -42,8 +42,8 @@ fun HomeScreen(navController: NavHostController,
     val userRole by sharedViewModel.userRole.observeAsState()
     val sensors by sharedViewModel.sensors.observeAsState()
     LaunchedEffect(Unit) {
-       sharedViewModel.getSensors()
-//        sharedViewModel.startSensorUpdates()
+//       sharedViewModel.getSensors()
+       sharedViewModel.startSensorUpdates()
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
