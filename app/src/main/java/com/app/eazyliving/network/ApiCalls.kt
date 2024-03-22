@@ -32,13 +32,13 @@ class ApiCalls(private val apiService: ApiService) {
             }
      */
 
-    suspend fun login(loginCredentials: LoginCredentials): ResponseBody? {
+    suspend fun login(loginCredentials: LoginCredentials): String? {
         return try {
             val response = Retrofit.apiService.login(loginCredentials)
             println("response: $response")
 
             if (response.isSuccessful) {
-                response.body()  // returns status 200 or okay if successful
+                response.headers()["Set-Cookie"]  // returns status 200 or okay if successful
             } else {
                 println("Error response: ${response.errorBody()?.string()}")
                 // Handle unsuccessful login by displaying an error message to the user.

@@ -39,14 +39,13 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
     fun login(email: String, password: String) {
         viewModelScope.launch {
             _loginState.value = LoginState.Loading
-            val result = Retrofit.apiService.login(LoginCredentials(email, password))
-            if (result.isSuccessful) {
-                val token = result.headers()["Set-Cookie"] // Assuming token is in Set-Cookie header
-                token?.let { processLoginResult(it) } ?: run {
-                    _loginState.value = LoginState.Error("No token received")
-                }
+            val result = apiCalls.login(LoginCredentials(email, password))
+            if (result != null) {
+                // If token is not null, login was successful
+                processLoginResult(result)
             } else {
-                _loginState.value = LoginState.Error("Login failed with status code: ${result.code()}")
+                // If token is null, an error occurred during login
+                _loginState.value = LoginState.Error("Login failed")
             }
         }
     }
