@@ -38,10 +38,10 @@ class ApiCalls(private val apiService: ApiService) {
             println("response: $response")
 
             if (response.isSuccessful) {
-                response.headers()["Set-Cookie"]  // returns status 200 or okay if successful
+                response.headers()["Set-Cookie"]
             } else {
                 println("Error response: ${response.errorBody()?.string()}")
-                // Handle unsuccessful login by displaying an error message to the user.
+
                 null
             }
         } catch (e: Exception) {
