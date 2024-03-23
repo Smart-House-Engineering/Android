@@ -36,19 +36,31 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
     val sensors: LiveData<List<SensorData>> = _sensors
 
     @RequiresApi(Build.VERSION_CODES.O)
+
     fun login(email: String, password: String) {
         viewModelScope.launch {
             _loginState.value = LoginState.Loading
-            val result = apiCalls.login(LoginCredentials(email, password))
-            if (result != null) {
-                // If token is not null, login was successful
-                processLoginResult(result)
-            } else {
-                // If token is null, an error occurred during login
-                _loginState.value = LoginState.Error("Login failed")
+            var attemptCount = 0
+            val maxAttempts = 3
+            var result: String? = null
+
+            while (attemptCount < maxAttempts && result == null) {
+                result = apiCalls.login(LoginCredentials(email, password))
+                attemptCount++
+
+                if (result != null) {
+                    processLoginResult(result)
+                } else {
+                    if (attemptCount < maxAttempts) {
+                        delay(2000)
+                    } else {
+                        _loginState.value = LoginState.Error("Login failed after $attemptCount attempts")
+                    }
+                }
             }
         }
     }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun processLoginResult(token: String) {
@@ -86,7 +98,6 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
                     Log.d("SharedViewModel", "Posting fetched sensors to LiveData: $fetchedSensors")
                 _sensors.postValue(fetchedSensors as List<SensorData>?)
                 } else {
-                    // If fetchedSensors is null, log this scenario
                     Log.d("SharedViewModel", "Fetched sensors is null")
                     _sensors.postValue(emptyList())
                 }
@@ -162,7 +173,7 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
                     if (fetchedSensors != null) {
                         _sensors.postValue(fetchedSensors!!)
                     }
-                    delay(20000)  // Wait for 5 seconds before refreshing again (you can adjust this value)
+                    delay(5000)
                 } catch (e: Exception) {
                     Log.e("SharedViewModel", "Error fetching sensors", e)
                 }
