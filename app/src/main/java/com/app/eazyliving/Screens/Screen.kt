@@ -7,4 +7,9 @@ sealed class Screen(val route: String){
     object SubUserScreen: Screen("SubUSerScreen")
 
     object ExternalScreen: Screen("ExternalScreen")
+
+    object ModesScreen: Screen("ModesScreen")
+
+    object UserScreen: Screen("UserScreen")
+
     }

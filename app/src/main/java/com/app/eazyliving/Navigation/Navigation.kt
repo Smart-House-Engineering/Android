@@ -10,7 +10,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.app.eazyliving.Screens.HomeScreen
 import com.app.eazyliving.Screens.LoginScreen
+import com.app.eazyliving.Screens.ModesScreen
 import com.app.eazyliving.Screens.Screen
+import com.app.eazyliving.Screens.UserScreen
 import com.app.eazyliving.Screens.externalScreen
 import com.app.eazyliving.Screens.subUserScreen
 
@@ -32,6 +34,14 @@ fun Navigation() {
         }
         composable(route = Screen.ExternalScreen.route) {
             externalScreen(navController = navController)
+        }
+
+        composable(route = Screen.ModesScreen.route) {
+            ModesScreen(navController = navController)
+        }
+
+        composable(route = Screen.UserScreen.route) {
+            UserScreen(navController = navController)
         }
     }
 }

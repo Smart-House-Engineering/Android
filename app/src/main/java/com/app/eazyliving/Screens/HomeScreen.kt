@@ -69,10 +69,10 @@ fun HomeScreen(navController: NavHostController, loginViewModel: LoginViewModel 
             }
         }
         BottomBar(
-            onHomeClick = { /* Handle Home click */ },
+            onHomeClick = { navController.navigate("HomeScreen") },
             onUserClick = { /* Handle User click */ },
             onModeClick = { /* Handle Mode click */ },
-            onLogoutClick = { /* Handle Logout click */ }
+            onLogoutClick = { navController.navigate("login")}
         )
     }
 }
