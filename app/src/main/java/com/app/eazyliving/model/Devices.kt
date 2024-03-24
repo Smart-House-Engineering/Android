@@ -8,7 +8,6 @@ data class DevicesResponse(
 data class Devices(
     val fan: Boolean,
     val yellowLed: Int,
-    val lights: Boolean,
     val RFan: Boolean,
     val motion: Boolean,
     val buzzer:Boolean,

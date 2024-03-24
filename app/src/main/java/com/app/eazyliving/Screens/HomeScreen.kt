@@ -76,7 +76,7 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                     sensorIcon = {
                         when (sensor.sensorName) {
 
-                            "lights" -> Image(
+                            "yellowLed" -> Image(
                                 painterResource(R.drawable.lights),
                                 contentDescription = "yellowLed",
                                 modifier = Modifier.size(24.dp),
