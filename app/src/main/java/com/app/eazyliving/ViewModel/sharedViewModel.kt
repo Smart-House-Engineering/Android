@@ -119,7 +119,6 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
                         val updatedSensors = _sensors.value?.map { sensor ->
                             when (sensor.sensorName) {
                                 "fan" -> sensor.copy(switchState = devices.fan)
-                                "lights" -> sensor.copy(switchState = devices.lights)
                                 "RFan" -> sensor.copy(switchState = devices.RFan)
                                 "motion" -> sensor.copy(switchState = devices.motion)
                                 "buzzer" -> sensor.copy(switchState = devices.buzzer)
