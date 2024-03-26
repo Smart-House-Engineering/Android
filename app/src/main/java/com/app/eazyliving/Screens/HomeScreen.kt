@@ -38,7 +38,9 @@ fun HomeScreen(navController: NavHostController,
     Column(modifier = Modifier.fillMaxSize()) {
         Header()
         UserInfoRow(userEmail, userRole)
-        sensors?.let { SensorsGrid(it, sharedViewModel) }
+        Box(modifier = Modifier.weight(1f)) {
+            sensors?.let { SensorsGrid(it, sharedViewModel) }
+        }
         BottomNavigation()
     }
 }
