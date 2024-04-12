@@ -15,7 +15,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SensorCard(
+    sensorName: String,
     switchState: Boolean,
+    sensorIcon: @Composable () -> Unit,
     onSwitchStateChanged: (Boolean) -> Unit
 ) {
     Card(
@@ -34,14 +36,16 @@ fun SensorCard(
             Box(
                 modifier = Modifier
                     .size(40.dp)
+                    .align(Alignment.CenterHorizontally)
                     .offset(20.dp, 20.dp)
                     .background(color = Color.White, shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "Icon", color = Color(0xFF838A8F))
+
+                sensorIcon()
             }
             Text(
-                text = "Name",
+                text = sensorName,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .offset(20.dp),

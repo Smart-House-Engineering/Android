@@ -12,7 +12,7 @@ class ReceivedCookiesInterceptor(private val context: Context) : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalResponse = chain.proceed(chain.request())
-
+Log.d("Testing", originalResponse.toString())
         if (originalResponse.headers("Set-Cookie").isNotEmpty()) {
             val sharedPreferences = context.getSharedPreferences("MyCookiePreferences", Context.MODE_PRIVATE)
             val cookies = sharedPreferences.getStringSet("PREF_COOKIES", HashSet()) as HashSet<String>
