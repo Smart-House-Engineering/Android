@@ -1,10 +1,18 @@
 package com.app.eazyliving.network
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
+import com.app.eazyliving.network.Cookies.AddCookiesInterceptor
 import com.app.eazyliving.network.Cookies.ReceivedCookiesInterceptor
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Response
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.Retrofit
+import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 /*
     Retrofit instance to make API calls.
@@ -20,16 +28,55 @@ import retrofit2.Retrofit
  */
 
 object Retrofit {
-    private var cookieInterceptor: ReceivedCookiesInterceptor? = null
+
+    @SuppressLint("StaticFieldLeak")
+    private lateinit var cookieInterceptor: ReceivedCookiesInterceptor
+    @SuppressLint("StaticFieldLeak")
+    private lateinit var addCookiesInterceptor: AddCookiesInterceptor
+
     fun initialize(context: Context) {
         cookieInterceptor = ReceivedCookiesInterceptor(context)
+        addCookiesInterceptor = AddCookiesInterceptor(context)
+
     }
     private const val BASE_URL = "https://evanescent-beautiful-venus.glitch.me/"
-    val apiService: ApiService by lazy {
-        val clientBuilder = OkHttpClient.Builder()
-        cookieInterceptor?.let {
-            clientBuilder.addInterceptor(it)
+    //
+    class RetryInterceptor(private val maxRetries: Int, private val backoff: Long) : Interceptor {
+        @Throws(IOException::class)
+        override fun intercept(chain: Interceptor.Chain): Response {
+            var attempt = 0
+            var response: Response = chain.proceed(chain.request())
+            while (!response.isSuccessful && attempt < maxRetries) {
+                attempt++
+                // Wait for a specified backoff period
+                try {
+                    Thread.sleep(backoff * attempt) // Exponential backoff
+                } catch (e: InterruptedException) {
+                    // Restore interrupt status
+                    Thread.currentThread().interrupt()
+                    throw IOException("Interrupted during backoff wait", e)
+                }
+                // Try the request again
+                response = chain.proceed(chain.request())
+            }
+            return response
         }
+    }
+    val apiService: ApiService by lazy {
+        val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+        val clientBuilder = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .addInterceptor(cookieInterceptor)
+            .addInterceptor(addCookiesInterceptor)
+            .addInterceptor(RetryInterceptor(3, 2000)) // Retries up to 3 times with exponential backoff
+            .connectTimeout(30, TimeUnit.SECONDS) // You can adjust these settings as well
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+
+        Log.d("Received Cookie interceptor", cookieInterceptor.toString())
+        Log.d("Add Cookie interceptor", addCookiesInterceptor.toString())
+        Log.d("client builder", clientBuilder.toString())
+
         val okHttpClient = clientBuilder.build()
         val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
