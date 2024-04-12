@@ -41,10 +41,8 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
             _loginState.value = LoginState.Loading
             val result = apiCalls.login(LoginCredentials(email, password))
             if (result != null) {
-                // If token is not null, login was successful
                 processLoginResult(result)
             } else {
-                // If token is null, an error occurred during login
                 _loginState.value = LoginState.Error("Login failed")
             }
         }
@@ -86,7 +84,6 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
                     Log.d("SharedViewModel", "Posting fetched sensors to LiveData: $fetchedSensors")
                 _sensors.postValue(fetchedSensors as List<SensorData>?)
                 } else {
-                    // If fetchedSensors is null, log this scenario
                     Log.d("SharedViewModel", "Fetched sensors is null")
                     _sensors.postValue(emptyList())
                 }
@@ -104,7 +101,7 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
                 // Directly map sensor names to their new Boolean state.
                 "fan", "lights", "RFan", "motion", "buzzer", "relay", "whiteLed", "button1", "button2" -> newState
                 // Convert Boolean to Int for specific sensors.
-                "yellowLed", "servo1", "servo2", "gasSensor", "photocell", "soilSensor", "steamSensor" -> if (newState) 1 else 0
+                "yellowLed", "door", "window", "gasSensor", "photocell", "soilSensor", "steamSensor" -> if (newState) 1 else 0
                 else -> null
             }
 
@@ -122,7 +119,6 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
                         val updatedSensors = _sensors.value?.map { sensor ->
                             when (sensor.sensorName) {
                                 "fan" -> sensor.copy(switchState = devices.fan)
-                                "lights" -> sensor.copy(switchState = devices.lights)
                                 "RFan" -> sensor.copy(switchState = devices.RFan)
                                 "motion" -> sensor.copy(switchState = devices.motion)
                                 "buzzer" -> sensor.copy(switchState = devices.buzzer)
@@ -131,17 +127,16 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
                                 "button1" -> sensor.copy(switchState = devices.button1)
                                 "button2" -> sensor.copy(switchState = devices.button2)
                                 "yellowLed" -> sensor.copy(switchState = devices.yellowLed > 0)
-                                "servo1" -> sensor.copy(switchState = devices.servo1 > 0)
-                                "servo2" -> sensor.copy(switchState = devices.servo2 > 0)
+                                "servo1" -> sensor.copy(switchState = devices.door > 0)
+                                "servo2" -> sensor.copy(switchState = devices.window > 0)
                                 "gasSensor" -> sensor.copy(switchState = devices.gasSensor > 0)
                                 "photocell" -> sensor.copy(switchState = devices.photocell > 0)
                                 "soilSensor" -> sensor.copy(switchState = devices.soilSensor > 0)
                                 "steamSensor" -> sensor.copy(switchState = devices.steamSensor > 0)
-                                else -> sensor // No update if sensor name doesn't match.
+                                else -> sensor
                             }
                         } ?: emptyList()
 
-                        // Post the updated sensor list.
                         _sensors.postValue(updatedSensors)
                     } else {
                         Log.e("ViewModel", "Failed to update sensor state. Error: ${response.errorBody()?.string()}")
@@ -156,13 +151,13 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
 
     fun startSensorUpdates() {
         viewModelScope.launch {
-            while (isActive) {  // Keeps this coroutine running as long as it's active
+            while (isActive) {
                 try {
                     val fetchedSensors = apiCalls.getSensors()
                     if (fetchedSensors != null) {
                         _sensors.postValue(fetchedSensors!!)
                     }
-                    delay(20000)  // Wait for 5 seconds before refreshing again (you can adjust this value)
+                    delay(5000)
                 } catch (e: Exception) {
                     Log.e("SharedViewModel", "Error fetching sensors", e)
                 }
