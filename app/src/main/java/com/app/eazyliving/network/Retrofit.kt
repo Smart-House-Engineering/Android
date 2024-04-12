@@ -69,7 +69,7 @@ object Retrofit {
             .addInterceptor(cookieInterceptor)
             .addInterceptor(addCookiesInterceptor)
             .addInterceptor(RetryInterceptor(3, 2000)) // Retries up to 3 times with exponential backoff
-            .connectTimeout(30, TimeUnit.SECONDS) // You can adjust these settings as well
+            .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
 
