@@ -34,7 +34,7 @@ fun AddUserDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(),
-                    color = Color.LightGray
+                    color = Color.White
 
                 ) {
                 Column(
