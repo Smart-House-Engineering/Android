@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -170,12 +169,10 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
 
 @Composable
 fun BottomNavigation(navController: NavHostController) {
-        BottomBar(
-            onHomeClick = { navController.navigate("HomeScreen") },
-            onUserClick = { /* Handle User click */ },
-            onModeClick = { /* Handle Mode click */ },
-            onLogoutClick = { navController.navigate("login")}
-        )
-    }
-
-
+    BottomBar(
+        onHomeClick = { navController.navigate(Screen.HomeScreen.route) },
+        onUserClick = { navController.navigate(Screen.UserScreen.route) },
+        onModeClick = { navController.navigate(Screen.ModesScreen.route) },
+        onLogoutClick = { navController.navigate(Screen.LoginScreen.route) }
+    )
+}
