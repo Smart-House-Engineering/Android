@@ -43,13 +43,19 @@ object Retrofit {
     //
     class RetryInterceptor(private val maxRetries: Int, private val backoff: Long) : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
-            var response = chain.proceed(chain.request())
+            val request = chain.request()
+
+            // Skip retry for logout requests
+            if (request.url.encodedPath.endsWith("logout")) {
+                return chain.proceed(request)
+            }
+            var response = chain.proceed(request)
             var tryCount = 0
 
             while (!response.isSuccessful && tryCount < maxRetries) {
-                response.close() // Close the previous response before retrying
+                response.close()
                 tryCount++
-                Thread.sleep(backoff * tryCount) // This is not recommended on a network thread; consider a different approach
+                Thread.sleep(backoff * tryCount)
                 response = chain.proceed(chain.request())
             }
             return response
@@ -62,7 +68,7 @@ object Retrofit {
             .addInterceptor(logging)
             .addInterceptor(cookieInterceptor)
             .addInterceptor(addCookiesInterceptor)
-            .addInterceptor(RetryInterceptor(3, 2000)) // Retries up to 3 times with exponential backoff
+            .addInterceptor(RetryInterceptor(3, 2000))
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)

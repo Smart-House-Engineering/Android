@@ -30,7 +30,18 @@ fun HomeScreen(navController: NavHostController,
     val userEmail by sharedViewModel.userEmail.observeAsState()
     val userRole by sharedViewModel.userRole.observeAsState()
     val sensors by sharedViewModel.sensors.observeAsState()
-    LaunchedEffect(Unit) {
+    val isLoggedIn by sharedViewModel.isLoggedIn.collectAsState()
+    LaunchedEffect(isLoggedIn) {
+        if (!isLoggedIn) {
+            try {
+                navController.navigate(Screen.LoginScreen.route) {
+                    popUpTo(Screen.LoginScreen.route) { inclusive = true }
+                }
+            } catch (e: Exception) {
+                Log.e("NavigationError", "Failed to navigate: ${e.localizedMessage}")
+            }
+        }
+
 //       sharedViewModel.getSensors()
        sharedViewModel.startSensorUpdates()
     }
@@ -42,7 +53,7 @@ fun HomeScreen(navController: NavHostController,
             sensors?.let { SensorsGrid(it, sharedViewModel) }
         }
 
-        BottomNavigation(navController)
+        BottomNavigation(navController,sharedViewModel)
 
     }
 
@@ -170,11 +181,12 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
     }
 
 @Composable
-fun BottomNavigation(navController: NavHostController) {
+fun BottomNavigation(navController: NavHostController,  sharedViewModel: SharedViewModel) {
     BottomBar(
         onHomeClick = { navController.navigate(Screen.HomeScreen.route) },
         onUserClick = { navController.navigate(Screen.UserScreen.route) },
         onModeClick = { navController.navigate(Screen.ModesScreen.route) },
-        onLogoutClick = { navController.navigate(Screen.LoginScreen.route) }
+        onLogoutClick = { sharedViewModel.logout() }
+
     )
 }

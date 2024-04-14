@@ -19,17 +19,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.app.eazyliving.ViewModel.SharedViewModel
 import com.app.eazyliving.ViewModel.UserUIState
 import com.app.eazyliving.ViewModel.UserViewModel
 import com.app.eazyliving.components.AddUserDialog
 import com.app.eazyliving.components.Header
 
 @Composable
-fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = viewModel()) {
+fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = viewModel(), sharedViewModel: SharedViewModel) {
     var showDialog by remember { mutableStateOf(false)
     }
     val uiState = userViewModel.uiState.collectAsState().value
@@ -51,28 +54,33 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
     }
 
     Column(
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally
+    verticalArrangement = Arrangement.spacedBy(20.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+            .padding(horizontal = 24.dp, vertical = 30.dp)
     ) {
         Header()
         Text(
             text = "User Screen",
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 16.dp)
         )
         Button(
             onClick = { showDialog = true },
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = "Add User")
+            Text(text = "Add User",
+                style = TextStyle(fontSize = 18.sp)
+            )
         }
         if (uiState is UserUIState.Loading) {
-            Text("Loading...", modifier = Modifier.padding(10.dp))
+            Text("Loading...", modifier = Modifier.padding(vertical = 10.dp))
         }
         AddUserDialog(
             showDialog = showDialog,
             onDismiss = { showDialog = false },
-            onUserAdded = { username, password,role ->
-                userViewModel.addUser(username, password, role)
+            onUserAdded = { userEmail, password,role ->
+                userViewModel.addUser(userEmail, password, role)
             }
         )
 
@@ -81,7 +89,7 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally)
         {
-            BottomNavigation(navController)
+            BottomNavigation(navController, sharedViewModel)
         }
     }
 

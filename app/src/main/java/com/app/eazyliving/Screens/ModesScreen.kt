@@ -8,10 +8,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.app.eazyliving.ViewModel.SharedViewModel
 import com.app.eazyliving.components.Header
 
 @Composable
-fun ModesScreen(navController: NavHostController) {
+fun ModesScreen(navController: NavHostController, sharedViewModel: SharedViewModel) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -26,7 +27,7 @@ fun ModesScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally)
         {
-            BottomNavigation(navController)
+            BottomNavigation(navController, sharedViewModel)
         }
     }
 

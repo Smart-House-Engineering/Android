@@ -1,5 +1,7 @@
 package com.app.eazyliving.ViewModel
 
+import android.app.Application
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -7,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.eazyliving.components.SessionRepository
 import com.app.eazyliving.model.DeviceList
 import com.app.eazyliving.model.LoginCredentials
 import com.app.eazyliving.model.SensorData
@@ -14,10 +17,12 @@ import com.app.eazyliving.network.ApiCalls
 import com.app.eazyliving.network.Cookies.decodeJWTAndExtractData
 import com.app.eazyliving.network.Retrofit
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
+class SharedViewModel(private val apiCalls: ApiCalls,private val sessionRepository: SessionRepository ) : ViewModel() {
     private var currentDevices: DeviceList? = null
 
     private val _loginState = MutableLiveData<LoginState>()
@@ -35,6 +40,9 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
     private val _sensors = MutableLiveData<List<SensorData>>(emptyList())
     val sensors: LiveData<List<SensorData>> = _sensors
 
+    private val _isLoggedIn = MutableStateFlow(true)
+    val isLoggedIn = _isLoggedIn.asStateFlow()
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun login(email: String, password: String) {
         viewModelScope.launch {
@@ -47,6 +55,7 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
             }
         }
     }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun processLoginResult(token: String) {
@@ -71,7 +80,7 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
     }
 
 
-   fun getSensors() {
+    fun getSensors() {
         viewModelScope.launch {
             try {
                 val fetchedSensors = apiCalls.getSensors()
@@ -79,10 +88,13 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
                 if (fetchedSensors != null) {
                     // Log individual sensor details for clarity
                     fetchedSensors.forEach { sensor ->
-                        Log.d("SharedViewModel", "Sensor: ${sensor.sensorName}, State: ${sensor.switchState}")
+                        Log.d(
+                            "SharedViewModel",
+                            "Sensor: ${sensor.sensorName}, State: ${sensor.switchState}"
+                        )
                     }
                     Log.d("SharedViewModel", "Posting fetched sensors to LiveData: $fetchedSensors")
-                _sensors.postValue(fetchedSensors as List<SensorData>?)
+                    _sensors.postValue(fetchedSensors as List<SensorData>?)
                 } else {
                     Log.d("SharedViewModel", "Fetched sensors is null")
                     _sensors.postValue(emptyList())
@@ -139,10 +151,19 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
 
                         _sensors.postValue(updatedSensors)
                     } else {
-                        Log.e("ViewModel", "Failed to update sensor state. Error: ${response.errorBody()?.string()}")
+                        Log.e(
+                            "ViewModel",
+                            "Failed to update sensor state. Error: ${
+                                response.errorBody()?.string()
+                            }"
+                        )
                     }
                 } catch (e: Exception) {
-                    Log.e("ViewModel", "Network error or serialization issue when updating sensors", e)
+                    Log.e(
+                        "ViewModel",
+                        "Network error or serialization issue when updating sensors",
+                        e
+                    )
                 }
             }
         }
@@ -164,13 +185,16 @@ class SharedViewModel(private val apiCalls: ApiCalls) : ViewModel() {
             }
         }
     }
-
-
-
+    fun logout() {
+        viewModelScope.launch {
+            val success = sessionRepository.logout()
+            Log.d("Logout", "Logout was successful: $success")
+            _isLoggedIn.value = !success
+        }
+    }
 }
 
-
-sealed class LoginState {
+    sealed class LoginState {
     object Idle : LoginState()
     object Loading : LoginState()
     data class Success(val role: String) : LoginState()

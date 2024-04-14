@@ -42,11 +42,11 @@ fun Navigation(sharedViewModelFactory: SharedViewModelFactory, userViewModelFact
         }
 
         composable(route = Screen.ModesScreen.route) {
-            ModesScreen(navController = navController)
+            ModesScreen(navController = navController,sharedViewModel)
         }
 
         composable(route = Screen.UserScreen.route) {
-            UserScreen(navController = navController, userViewModel = userViewModel  )
+            UserScreen(navController = navController, userViewModel = userViewModel,sharedViewModel  )
         }
 
 
