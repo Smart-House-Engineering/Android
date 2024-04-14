@@ -21,13 +21,17 @@ class UserViewModel(private val apiService: ApiService) : ViewModel() {
     val uiState = _uiState.asStateFlow()
 
     fun addUser(email: String, password: String, role: String) {
+        _uiState.value = UserUIState.Loading
         viewModelScope.launch {
-            _uiState.value = UserUIState.Loading
             try {
-                apiService.addUsers(UserCredentials(email, password, role))
-                _uiState.value = UserUIState.Success("User added successfully")
+                val response = apiService.addUsers(UserCredentials(email, password, role))
+                if (response.isSuccessful) {
+                    _uiState.value = UserUIState.Success("User added successfully")
+                } else {
+                    _uiState.value = UserUIState.Error("Failed to add user: ${response.message()}")
+                }
             } catch (e: Exception) {
-                _uiState.value = UserUIState.Error("Failed to add user: ${e.localizedMessage}")
+                _uiState.value = UserUIState.Error("An error occurred: ${e.localizedMessage}")
             }
         }
     }

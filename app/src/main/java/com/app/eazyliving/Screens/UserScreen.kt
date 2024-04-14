@@ -1,5 +1,6 @@
 package com.app.eazyliving.Screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,8 +33,22 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
     var showDialog by remember { mutableStateOf(false)
     }
     val uiState = userViewModel.uiState.collectAsState().value
-    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is UserUIState.Success -> {
+                Toast.makeText(context, uiState.message, Toast.LENGTH_LONG).show()
+                navController.navigate("HomeScreen"){
+                popUpTo("UserScreen") { inclusive = true } // Adjust based on your actual navigation setup
+            }
+            }
+            is UserUIState.Error -> {
+                Toast.makeText(context, uiState.error, Toast.LENGTH_LONG).show()
+            }
+            else -> Unit
+        }
+    }
 
     Column(
     verticalArrangement = Arrangement.Center,
@@ -50,14 +66,13 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
             Text(text = "Add User")
         }
         if (uiState is UserUIState.Loading) {
-            Text("Loading...")
+            Text("Loading...", modifier = Modifier.padding(10.dp))
         }
         AddUserDialog(
             showDialog = showDialog,
             onDismiss = { showDialog = false },
             onUserAdded = { username, password,role ->
                 userViewModel.addUser(username, password, role)
-                navController.navigate("other_route")
             }
         )
 
