@@ -16,12 +16,16 @@ import com.app.eazyliving.Screens.externalScreen
 import com.app.eazyliving.Screens.subUserScreen
 import com.app.eazyliving.ViewModel.SharedViewModel
 import com.app.eazyliving.ViewModel.SharedViewModelFactory
+import com.app.eazyliving.ViewModel.UserViewModel
+import com.app.eazyliving.ViewModel.UserViewModelFactory
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Navigation(sharedViewModelFactory: SharedViewModelFactory) {
+fun Navigation(sharedViewModelFactory: SharedViewModelFactory, userViewModelFactory: UserViewModelFactory) {
     val navController = rememberNavController()
     val sharedViewModel: SharedViewModel = viewModel(factory = sharedViewModelFactory)
+    val userViewModel:UserViewModel  = viewModel(factory = userViewModelFactory)
+
     NavHost(navController = navController, startDestination = Screen.LoginScreen.route){
         composable(route = Screen.LoginScreen.route) {
             LoginScreen(navController = navController, sharedViewModel = sharedViewModel)
@@ -42,7 +46,9 @@ fun Navigation(sharedViewModelFactory: SharedViewModelFactory) {
         }
 
         composable(route = Screen.UserScreen.route) {
-            UserScreen(navController = navController)
+            UserScreen(navController = navController, userViewModel = userViewModel  )
         }
+
+
     }
 }

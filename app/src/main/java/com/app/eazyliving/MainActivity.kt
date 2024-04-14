@@ -11,6 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.app.eazyliving.Navigation.Navigation
 import com.app.eazyliving.ViewModel.SharedViewModelFactory
+import com.app.eazyliving.ViewModel.UserViewModelFactory
 import com.app.eazyliving.network.ApiCalls
 import com.app.eazyliving.network.Retrofit
 import com.app.eazyliving.network.Retrofit.apiService
@@ -24,13 +25,14 @@ class MainActivity : ComponentActivity() {
         Retrofit.initialize(this)
        val apiCalls = ApiCalls( apiService) // Initialize your ApiCalls here
        val sharedViewModelFactory = SharedViewModelFactory(apiCalls)
+        val userViewModelFactory = UserViewModelFactory(apiService)
         setContent {
             EazyLivingTheme {
                 Surface(
                     modifier = Modifier.wrapContentSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Navigation(sharedViewModelFactory)
+                    Navigation(sharedViewModelFactory,  userViewModelFactory)
                 }
             }
         }

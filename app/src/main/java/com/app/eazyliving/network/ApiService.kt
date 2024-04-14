@@ -4,6 +4,7 @@ import com.app.eazyliving.model.Devices
 import com.app.eazyliving.model.DevicesResponse
 import com.app.eazyliving.model.LoginCredentials
 import com.app.eazyliving.model.UpdateResponse
+import com.app.eazyliving.model.UserCredentials
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
@@ -27,4 +28,8 @@ interface ApiService {
     @PUT("/api/homeUser/defaultMode")
     @JvmSuppressWildcards
     suspend fun updateSensors(@Body updatedDevices: Map<String, Map<String, Any>>): Response<UpdateResponse>// <- TODO: fix this thing
+
+    @POST("/api/owner/addUser/")
+    suspend fun addUsers(@Body userData: UserCredentials): Response<ResponseBody>
 }
+

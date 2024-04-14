@@ -21,7 +21,7 @@ import androidx.compose.ui.window.DialogProperties
 fun AddUserDialog(
     showDialog: Boolean,
     onDismiss: () -> Unit,
-    onUserAdded: (String, String) -> Unit
+    onUserAdded: (String, String,String) -> Unit
 ) {
     if (showDialog) {
         val focusManager = LocalFocusManager.current
@@ -48,6 +48,7 @@ fun AddUserDialog(
                     )
                     var username by remember { mutableStateOf("") }
                     var password by remember { mutableStateOf("") }
+                    var role by remember { mutableStateOf("") }
 
                     OutlinedTextField(
                         value = username,
@@ -72,11 +73,22 @@ fun AddUserDialog(
                             imeAction = ImeAction.Done,
                             keyboardType = KeyboardType.Password
                         ),
+                    )
+                    OutlinedTextField(
+                        value = role,
+                        onValueChange = { role = it },
+                        label = { Text("Role") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Done,
+                            keyboardType = KeyboardType.Text
+                        ),
                         keyboardActions = KeyboardActions(
                             onDone = {
-                                onUserAdded(username, password)
+                                onUserAdded(username, password, role)
                                 username = ""
                                 password = ""
+                                role = ""
                                 onDismiss()
                             }
                         )
@@ -92,9 +104,10 @@ fun AddUserDialog(
                         }
                         Button(
                             onClick = {
-                                onUserAdded(username, password)
+                                onUserAdded(username, password, role)
                                 username = ""
                                 password = ""
+                                role = ""
                                 onDismiss()
                             }
                         ) {
