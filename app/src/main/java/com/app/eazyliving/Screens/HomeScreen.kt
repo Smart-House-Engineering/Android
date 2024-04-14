@@ -35,14 +35,17 @@ fun HomeScreen(navController: NavHostController,
        sharedViewModel.startSensorUpdates()
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column (modifier = Modifier.fillMaxSize()){
         Header()
         UserInfoRow(userEmail, userRole)
         Box(modifier = Modifier.weight(1f)) {
             sensors?.let { SensorsGrid(it, sharedViewModel) }
         }
-        BottomNavigation()
+
+        BottomNavigation(navController)
+
     }
+
 }
 
 @Composable
@@ -167,13 +170,11 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
     }
 
 @Composable
-fun BottomNavigation() {
-        BottomBar(
-            onHomeClick = { /* Handle Home click */ },
-            onUserClick = { /* Handle User click */ },
-            onModeClick = { /* Handle Mode click */ },
-            onLogoutClick = { /* Handle Logout click */ }
-        )
-    }
-
-
+fun BottomNavigation(navController: NavHostController) {
+    BottomBar(
+        onHomeClick = { navController.navigate(Screen.HomeScreen.route) },
+        onUserClick = { navController.navigate(Screen.UserScreen.route) },
+        onModeClick = { navController.navigate(Screen.ModesScreen.route) },
+        onLogoutClick = { navController.navigate(Screen.LoginScreen.route) }
+    )
+}
