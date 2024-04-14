@@ -42,26 +42,20 @@ object Retrofit {
     private const val BASE_URL = "https://evanescent-beautiful-venus.glitch.me/"
     //
     class RetryInterceptor(private val maxRetries: Int, private val backoff: Long) : Interceptor {
-        @Throws(IOException::class)
         override fun intercept(chain: Interceptor.Chain): Response {
-            var attempt = 0
-            var response: Response = chain.proceed(chain.request())
-            while (!response.isSuccessful && attempt < maxRetries) {
-                attempt++
-                // Wait for a specified backoff period
-                try {
-                    Thread.sleep(backoff * attempt) // Exponential backoff
-                } catch (e: InterruptedException) {
-                    // Restore interrupt status
-                    Thread.currentThread().interrupt()
-                    throw IOException("Interrupted during backoff wait", e)
-                }
-                // Try the request again
+            var response = chain.proceed(chain.request())
+            var tryCount = 0
+
+            while (!response.isSuccessful && tryCount < maxRetries) {
+                response.close() // Close the previous response before retrying
+                tryCount++
+                Thread.sleep(backoff * tryCount) // This is not recommended on a network thread; consider a different approach
                 response = chain.proceed(chain.request())
             }
             return response
         }
     }
+
     val apiService: ApiService by lazy {
         val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         val clientBuilder = OkHttpClient.Builder()
