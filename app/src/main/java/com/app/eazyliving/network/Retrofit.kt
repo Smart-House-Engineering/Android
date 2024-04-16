@@ -41,49 +41,49 @@ object Retrofit {
     }
     private const val BASE_URL = "https://evanescent-beautiful-venus.glitch.me/"
     //
-    class RetryInterceptor(private val maxRetries: Int, private val backoff: Long) : Interceptor {
-        override fun intercept(chain: Interceptor.Chain): Response {
-            val request = chain.request()
-
-            // Skip retry for logout requests
-            if (request.url.encodedPath.endsWith("logout")) {
-                return chain.proceed(request)
+class RetryInterceptor(private val maxRetries: Int, private val backoff: Long) : Interceptor {
+    @Throws(IOException::class)
+    override fun intercept(chain: Interceptor.Chain): Response {
+        var attempt = 0
+        var response: Response = chain.proceed(chain.request())
+        while (!response.isSuccessful && attempt < maxRetries) {
+            attempt++
+            // Wait for a specified backoff period
+            try {
+                Thread.sleep(backoff * attempt) // Exponential backoff
+            } catch (e: InterruptedException) {
+                // Restore interrupt status
+                Thread.currentThread().interrupt()
+                throw IOException("Interrupted during backoff wait", e)
             }
-            var response = chain.proceed(request)
-            var tryCount = 0
-
-            while (!response.isSuccessful && tryCount < maxRetries) {
-                response.close()
-                tryCount++
-                Thread.sleep(backoff * tryCount)
-                response = chain.proceed(chain.request())
-            }
-            return response
+            // Try the request again
+            response = chain.proceed(chain.request())
         }
+        return response
     }
+}
+val apiService: ApiService by lazy {
+    val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+    val clientBuilder = OkHttpClient.Builder()
+        .addInterceptor(logging)
+        .addInterceptor(cookieInterceptor)
+        .addInterceptor(addCookiesInterceptor)
+        .addInterceptor(RetryInterceptor(3, 2000)) // Retries up to 3 times with exponential backoff
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
 
-    val apiService: ApiService by lazy {
-        val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
-        val clientBuilder = OkHttpClient.Builder()
-            .addInterceptor(logging)
-            .addInterceptor(cookieInterceptor)
-            .addInterceptor(addCookiesInterceptor)
-            .addInterceptor(RetryInterceptor(3, 2000))
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
+    Log.d("Received Cookie interceptor", cookieInterceptor.toString())
+    Log.d("Add Cookie interceptor", addCookiesInterceptor.toString())
+    Log.d("client builder", clientBuilder.toString())
 
-        Log.d("Received Cookie interceptor", cookieInterceptor.toString())
-        Log.d("Add Cookie interceptor", addCookiesInterceptor.toString())
-        Log.d("client builder", clientBuilder.toString())
-
-        val okHttpClient = clientBuilder.build()
-        val retrofit = Retrofit.Builder()
+    val okHttpClient = clientBuilder.build()
+    val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-        retrofit.create(ApiService::class.java)
-    }
+    retrofit.create(ApiService::class.java)
+}
 }
