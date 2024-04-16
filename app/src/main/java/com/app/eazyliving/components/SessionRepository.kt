@@ -9,7 +9,7 @@ import com.app.eazyliving.network.Retrofit
 class SessionRepository(private val context: Context) {
 
     private fun clearSessionData() {
-        val sharedPreferences = context.getSharedPreferences("YourPrefsName", Context.MODE_PRIVATE)
+        val sharedPreferences = context.getSharedPreferences("MyCookiePreferences", Context.MODE_PRIVATE)
         sharedPreferences.edit().clear().apply()
     }
 

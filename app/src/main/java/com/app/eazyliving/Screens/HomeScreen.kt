@@ -33,17 +33,20 @@ fun HomeScreen(navController: NavHostController,
     val isLoggedIn by sharedViewModel.isLoggedIn.collectAsState()
     LaunchedEffect(isLoggedIn) {
         if (!isLoggedIn) {
-            try {
-                navController.navigate(Screen.LoginScreen.route) {
-                    popUpTo(Screen.LoginScreen.route) { inclusive = true }
-                }
-            } catch (e: Exception) {
-                Log.e("NavigationError", "Failed to navigate: ${e.localizedMessage}")
-            }
-        }
+                sharedViewModel.stopSensorUpdates()  // Ensure updates are stopped before navigation
 
-//       sharedViewModel.getSensors()
-       sharedViewModel.startSensorUpdates()
+                try {
+                    navController.navigate(Screen.LoginScreen.route) {
+                        popUpTo(Screen.HomeScreen.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                } catch (e: Exception) {
+                    Log.e("NavigationError", "Failed to navigate: ${e.localizedMessage}")
+                }
+            }
+       else {
+            sharedViewModel.startSensorUpdates()
+        }
     }
 
     Column (modifier = Modifier.fillMaxSize()){
