@@ -1,6 +1,8 @@
 package com.app.eazyliving.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -32,9 +34,10 @@ fun AddUserDialog(
         ) {
                 Surface(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(),
-                    color = Color.White
+                        .width(400.dp)
+                        .height(400.dp),
+                    color = Color(0xFFC4E2FB),
+                    shape = RoundedCornerShape(5)
 
                 ) {
                 Column(
@@ -48,6 +51,7 @@ fun AddUserDialog(
                     )
                     var username by remember { mutableStateOf("") }
                     var password by remember { mutableStateOf("") }
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     OutlinedTextField(
                         value = username,
@@ -81,12 +85,27 @@ fun AddUserDialog(
                             }
                         )
                     )
+
+                    OutlinedTextField(
+                        value = username,
+                        onValueChange = { username = it },
+                        label = { Text("Confirm Password") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Next,
+                            keyboardType = KeyboardType.Text
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
                     Row(
                         horizontalArrangement = Arrangement.End
                     ) {
                         Button(
                             onClick = { onDismiss() },
-                            modifier = Modifier.padding(end = 8.dp)
+                            modifier = Modifier.padding(end = 16.dp)
                         ) {
                             Text("Cancel")
                         }
@@ -98,7 +117,7 @@ fun AddUserDialog(
                                 onDismiss()
                             }
                         ) {
-                            Text("Submit")
+                            Text("Register")
                         }
                     }
                 }
