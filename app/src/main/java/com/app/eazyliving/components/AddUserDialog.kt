@@ -46,14 +46,14 @@ fun AddUserDialog(
                         text = "Add User",
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    var username by remember { mutableStateOf("") }
+                    var userEmail by remember { mutableStateOf("") }
                     var password by remember { mutableStateOf("") }
                     var role by remember { mutableStateOf("") }
 
                     OutlinedTextField(
-                        value = username,
-                        onValueChange = { username = it },
-                        label = { Text("Username") },
+                        value = userEmail,
+                        onValueChange = { userEmail = it },
+                        label = { Text("UserEmail") },
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions.Default.copy(
                             imeAction = ImeAction.Next,
@@ -85,8 +85,8 @@ fun AddUserDialog(
                         ),
                         keyboardActions = KeyboardActions(
                             onDone = {
-                                onUserAdded(username, password, role)
-                                username = ""
+                                onUserAdded(userEmail, password, role)
+                                userEmail = ""
                                 password = ""
                                 role = ""
                                 onDismiss()
@@ -104,8 +104,8 @@ fun AddUserDialog(
                         }
                         Button(
                             onClick = {
-                                onUserAdded(username, password, role)
-                                username = ""
+                                onUserAdded(userEmail, password, role)
+                                userEmail = ""
                                 password = ""
                                 role = ""
                                 onDismiss()
