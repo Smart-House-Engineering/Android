@@ -23,7 +23,7 @@ import androidx.compose.ui.window.DialogProperties
 fun AddUserDialog(
     showDialog: Boolean,
     onDismiss: () -> Unit,
-    onUserAdded: (String, String) -> Unit
+    onUserAdded: (String, String,String) -> Unit
 ) {
     if (showDialog) {
         val focusManager = LocalFocusManager.current
@@ -49,14 +49,18 @@ fun AddUserDialog(
                         text = "Add User",
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    var username by remember { mutableStateOf("") }
+                    var userEmail by remember { mutableStateOf("") }
                     var password by remember { mutableStateOf("") }
+
+                    var role by remember { mutableStateOf("") }
+
                     Spacer(modifier = Modifier.height(20.dp))
 
+
                     OutlinedTextField(
-                        value = username,
-                        onValueChange = { username = it },
-                        label = { Text("Username") },
+                        value = userEmail,
+                        onValueChange = { userEmail = it },
+                        label = { Text("UserEmail") },
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions.Default.copy(
                             imeAction = ImeAction.Next,
@@ -76,29 +80,27 @@ fun AddUserDialog(
                             imeAction = ImeAction.Done,
                             keyboardType = KeyboardType.Password
                         ),
+                    )
+                    OutlinedTextField(
+                        value = role,
+                        onValueChange = { role = it },
+                        label = { Text("Role") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Done,
+                            keyboardType = KeyboardType.Text
+                        ),
                         keyboardActions = KeyboardActions(
                             onDone = {
-                                onUserAdded(username, password)
-                                username = ""
+                                onUserAdded(userEmail, password, role)
+                                userEmail = ""
                                 password = ""
+                                role = ""
                                 onDismiss()
                             }
                         )
                     )
 
-                    OutlinedTextField(
-                        value = username,
-                        onValueChange = { username = it },
-                        label = { Text("Confirm Password") },
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Next,
-                            keyboardType = KeyboardType.Text
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                        )
-                    )
                     Spacer(modifier = Modifier.height(20.dp))
                     Row(
                         horizontalArrangement = Arrangement.End
@@ -111,9 +113,10 @@ fun AddUserDialog(
                         }
                         Button(
                             onClick = {
-                                onUserAdded(username, password)
-                                username = ""
+                                onUserAdded(userEmail, password, role)
+                                userEmail = ""
                                 password = ""
+                                role = ""
                                 onDismiss()
                             }
                         ) {

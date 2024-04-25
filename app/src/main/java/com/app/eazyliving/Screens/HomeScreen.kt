@@ -30,9 +30,23 @@ fun HomeScreen(navController: NavHostController,
     val userEmail by sharedViewModel.userEmail.observeAsState()
     val userRole by sharedViewModel.userRole.observeAsState()
     val sensors by sharedViewModel.sensors.observeAsState()
-    LaunchedEffect(Unit) {
-//       sharedViewModel.getSensors()
-       sharedViewModel.startSensorUpdates()
+    val isLoggedIn by sharedViewModel.isLoggedIn.collectAsState()
+    LaunchedEffect(isLoggedIn) {
+        if (!isLoggedIn) {
+                sharedViewModel.stopSensorUpdates()  // Ensure updates are stopped before navigation
+
+                try {
+                    navController.navigate(Screen.LoginScreen.route) {
+                        popUpTo(Screen.HomeScreen.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                } catch (e: Exception) {
+                    Log.e("NavigationError", "Failed to navigate: ${e.localizedMessage}")
+                }
+            }
+       else {
+            sharedViewModel.startSensorUpdates()
+        }
     }
 
     Column (modifier = Modifier.fillMaxSize()){
@@ -41,7 +55,9 @@ fun HomeScreen(navController: NavHostController,
         Box(modifier = Modifier.weight(1f)) {
             sensors?.let { SensorsGrid(it, sharedViewModel) }
         }
-        BottomNavigation(navController)
+
+        BottomNavigation(navController,sharedViewModel)
+
     }
 
 }
@@ -168,11 +184,12 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
     }
 
 @Composable
-fun BottomNavigation(navController: NavHostController) {
+fun BottomNavigation(navController: NavHostController,  sharedViewModel: SharedViewModel) {
     BottomBar(
         onHomeClick = { navController.navigate(Screen.HomeScreen.route) },
         onUserClick = { navController.navigate(Screen.UserScreen.route) },
         onModeClick = { navController.navigate(Screen.ModesScreen.route) },
-        onLogoutClick = { navController.navigate(Screen.LoginScreen.route) }
+        onLogoutClick = { sharedViewModel.logout() }
+
     )
 }
