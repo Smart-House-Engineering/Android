@@ -24,5 +24,4 @@ abstract class ConditionalApiService(private val realApiService: ApiService) : A
         }
     }
 
-    // Implement other methods similarly
 }
