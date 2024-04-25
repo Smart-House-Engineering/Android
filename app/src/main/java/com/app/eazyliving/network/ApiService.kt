@@ -4,6 +4,7 @@ import com.app.eazyliving.model.Devices
 import com.app.eazyliving.model.DevicesResponse
 import com.app.eazyliving.model.LoginCredentials
 import com.app.eazyliving.model.UpdateResponse
+import com.app.eazyliving.model.UserCredentials
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
@@ -22,9 +23,12 @@ interface ApiService {
     suspend fun login(@Body loginCredentials: LoginCredentials): Response<ResponseBody> // <- requires login credentials to be passed in the request body and returns a User object
 
     @POST("/auth/logout")
-    suspend fun logout(): Response<Unit> // <- Unit is the return type of a void function
-
+    suspend fun logout(): Response<ResponseBody>
     @PUT("/api/homeUser/defaultMode")
     @JvmSuppressWildcards
     suspend fun updateSensors(@Body updatedDevices: Map<String, Map<String, Any>>): Response<UpdateResponse>// <- TODO: fix this thing
+
+    @POST("/api/owner/addUser/")
+    suspend fun addUsers(@Body userData: UserCredentials): Response<ResponseBody>
 }
+
