@@ -95,13 +95,14 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                     sensorIcon = {
                         when (sensor.sensorName) {
 
-                            "yellowLed" -> Image(
+                            "y" +
+                                    "Yellow Ledlight" -> Image(
                                 painterResource(R.drawable.lights),
                                 contentDescription = "yellowLed",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "fan" -> Image(
+                            "Fan" -> Image(
                                 painterResource(R.drawable.fan), contentDescription = "Fan",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
@@ -111,62 +112,62 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "motion" -> Image(
+                            "Motion" -> Image(
                                 painterResource(R.drawable.motion), contentDescription = "Motion",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "buzzer" -> Image(
+                            "Buzzer" -> Image(
                                 painterResource(R.drawable.buzzer), contentDescription = "Buzzer",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "relay" -> Image(
+                            "Relay" -> Image(
                                 painterResource(R.drawable.relay), contentDescription = "relay",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "door" -> Image(
+                            "Door" -> Image(
                                 painterResource(R.drawable.door), contentDescription = "door",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "window" -> Image(
+                            "Window" -> Image(
                                 painterResource(R.drawable.window), contentDescription = "window",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "gasSensor" -> Image(
+                            "Gas Sensor" -> Image(
                                 painterResource(R.drawable.gassensor), contentDescription = "gasSensor",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "photocell" -> Image(
+                            "Photocell" -> Image(
                                 painterResource(R.drawable.photocell), contentDescription = "Photocell",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "soilSensor" -> Image(
+                            "Soil Sensor" -> Image(
                                 painterResource(R.drawable.soilsensor), contentDescription = "soilSensor",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "steamSensor" -> Image(
+                            "Steam Sensor" -> Image(
                                 painterResource(R.drawable.steamsensor), contentDescription = "steamSensor",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "whiteLed" -> Image(
+                            "White Ledlight" -> Image(
                                 painterResource(R.drawable.whiteled), contentDescription = "whiteLed",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "button1" -> Image(
+                            "Button1" -> Image(
                                 painterResource(R.drawable.button1), contentDescription = "button1",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "button2" -> Image(
+                            "Button2" -> Image(
                                 painterResource(R.drawable.button2), contentDescription = "button2",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
