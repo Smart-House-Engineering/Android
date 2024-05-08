@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun TenantBottomBar(
     onHomeClick: () -> Unit,
-    onUserClick: () -> Unit,
     onModeClick: () -> Unit,
     onLogoutClick: () -> Unit
 ) {
