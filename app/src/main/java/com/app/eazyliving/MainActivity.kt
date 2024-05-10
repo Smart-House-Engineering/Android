@@ -24,9 +24,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Retrofit.initialize(this)
-       val apiCalls = ApiCalls( apiService)
+        val apiCalls = ApiCalls( apiService)
         val sessionRepository = SessionRepository(this)
-       val sharedViewModelFactory = SharedViewModelFactory(apiCalls, sessionRepository)
+        val sharedViewModelFactory = SharedViewModelFactory(apiCalls, sessionRepository)
         val userViewModelFactory = UserViewModelFactory(apiService)
         setContent {
             EazyLivingTheme {
