@@ -79,14 +79,17 @@ fun UserInfoRow(userEmail: String?, userRole: String?) {
 
 @Composable
 fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
+    val filteredSensors = sensors.filterNot { sensor ->
+        sensor.sensorName in listOf("button1", "button2", "motion", "photocell")
+    }
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        if (sensors.isNotEmpty()) {
-            items(items = sensors, key = { sensor -> sensor.sensorName }) { sensor ->
+        if (filteredSensors.isNotEmpty()) {
+            items(items = filteredSensors, key = { sensor -> sensor.sensorName }) { sensor ->
                 Log.d("sensorData", sensor.toString())
 
                 SensorCard(
@@ -111,11 +114,11 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "motion" -> Image(
-                                painterResource(R.drawable.motion), contentDescription = "Motion",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
+//                            "motion" -> Image(
+//                                painterResource(R.drawable.motion), contentDescription = "Motion",
+//                                modifier = Modifier.size(24.dp),
+//                                contentScale = ContentScale.Fit
+//                            )
                             "buzzer" -> Image(
                                 painterResource(R.drawable.buzzer), contentDescription = "Buzzer",
                                 modifier = Modifier.size(24.dp),
@@ -141,11 +144,11 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "photocell" -> Image(
-                                painterResource(R.drawable.photocell), contentDescription = "Photocell",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
+//                            "photocell" -> Image(
+//                                painterResource(R.drawable.photocell), contentDescription = "Photocell",
+//                                modifier = Modifier.size(24.dp),
+//                                contentScale = ContentScale.Fit
+//                            )
                             "soilSensor" -> Image(
                                 painterResource(R.drawable.soilsensor), contentDescription = "soilSensor",
                                 modifier = Modifier.size(24.dp),
@@ -161,16 +164,16 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "button1" -> Image(
-                                painterResource(R.drawable.button1), contentDescription = "button1",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                            "button2" -> Image(
-                                painterResource(R.drawable.button2), contentDescription = "button2",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
+//                            "button1" -> Image(
+//                                painterResource(R.drawable.button1), contentDescription = "button1",
+//                                modifier = Modifier.size(24.dp),
+//                                contentScale = ContentScale.Fit
+//                            )
+//                            "button2" -> Image(
+//                                painterResource(R.drawable.button2), contentDescription = "button2",
+//                                modifier = Modifier.size(24.dp),
+//                                contentScale = ContentScale.Fit
+//                            )
                         }
                     }
                 ) { newState ->
