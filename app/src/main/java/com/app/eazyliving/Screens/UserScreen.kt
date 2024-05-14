@@ -83,14 +83,14 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
                 userViewModel.addUser(userEmail, password, role)
             }
         )
+    }
 
-        Column(modifier = Modifier
-            .fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally)
-        {
-            BottomNavigation(navController, sharedViewModel)
-        }
+    Column(modifier = Modifier
+        .fillMaxSize(),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.CenterHorizontally)
+    {
+        BottomNavigation(navController, sharedViewModel)
     }
 
 }
