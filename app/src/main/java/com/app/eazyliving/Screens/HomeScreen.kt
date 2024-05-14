@@ -102,14 +102,13 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                     sensorIcon = {
                         when (sensor.sensorName) {
 
-                            "y" +
-                                    "Yellow Ledlight" -> Image(
+                            "yellowLed" -> Image(
                                 painterResource(R.drawable.lights),
                                 contentDescription = "yellowLed",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Fan" -> Image(
+                            "fan" -> Image(
                                 painterResource(R.drawable.fan), contentDescription = "Fan",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
@@ -125,22 +124,22 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Relay" -> Image(
+                            "relay" -> Image(
                                 painterResource(R.drawable.relay), contentDescription = "relay",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Door" -> Image(
+                            "door" -> Image(
                                 painterResource(R.drawable.door), contentDescription = "door",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Window" -> Image(
+                            "window" -> Image(
                                 painterResource(R.drawable.window), contentDescription = "window",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Gas Sensor" -> Image(
+                            "gasSensor" -> Image(
                                 painterResource(R.drawable.gassensor), contentDescription = "gasSensor",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
@@ -150,12 +149,12 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Steam Sensor" -> Image(
+                            "steamSensor" -> Image(
                                 painterResource(R.drawable.steamsensor), contentDescription = "steamSensor",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "White Ledlight" -> Image(
+                            "whiteLed" -> Image(
                                 painterResource(R.drawable.whiteled), contentDescription = "whiteLed",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
