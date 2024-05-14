@@ -83,14 +83,16 @@ fun UserInfoRow(userEmail: String?, userRole: String?) {
 
 @Composable
 fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
-    val excludedSensorNames = listOf("motion", "button1", "button2", "photocell")
+    val filteredSensors = sensors.filterNot { sensor ->
+        sensor.sensorName in listOf("button1", "button2", "motion", "photocell")
+    }
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        sensors.filter { !excludedSensorNames.contains(it.sensorName) }.let { filteredSensors ->
+        if (filteredSensors.isNotEmpty()) {
             items(items = filteredSensors, key = { sensor -> sensor.sensorName }) { sensor ->
                 Log.d("sensorData", sensor.toString())
 
@@ -118,7 +120,7 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 contentScale = ContentScale.Fit
                             )
 
-                            "Buzzer" -> Image(
+                            "buzzer" -> Image(
                                 painterResource(R.drawable.buzzer), contentDescription = "Buzzer",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
@@ -143,8 +145,7 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-
-                            "Soil Sensor" -> Image(
+                            "soilSensor" -> Image(
                                 painterResource(R.drawable.soilsensor), contentDescription = "soilSensor",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
