@@ -22,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.app.eazyliving.R
 import com.app.eazyliving.ViewModel.SharedViewModel
+import com.app.eazyliving.components.TenantBottomBar
 
 
 @Composable
@@ -55,8 +56,11 @@ fun HomeScreen(navController: NavHostController,
         Box(modifier = Modifier.weight(1f)) {
             sensors?.let { SensorsGrid(it, sharedViewModel) }
         }
-
-        BottomNavigation(navController,sharedViewModel)
+        // Render bottom bar based on user role
+        when (userRole) {
+            "TENANT" -> TenantBottomNavigation(navController, sharedViewModel)
+            "OWNER" -> BottomNavigation(navController, sharedViewModel)
+        }
 
     }
 
@@ -102,21 +106,21 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            /*"Fan" -> Image(
+                            "Fan" -> Image(
                                 painterResource(R.drawable.fan), contentDescription = "Fan",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
-                            )*/
+                            )
                             "RFan" -> Image(
                                 painterResource(R.drawable.rfan), contentDescription = "RFan",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            /*"Motion" -> Image(
+                            "Motion" -> Image(
                                 painterResource(R.drawable.motion), contentDescription = "Motion",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
-                            )*/
+                            )
                             "Buzzer" -> Image(
                                 painterResource(R.drawable.buzzer), contentDescription = "Buzzer",
                                 modifier = Modifier.size(24.dp),
@@ -142,11 +146,11 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            /*"Photocell" -> Image(
+                            "Photocell" -> Image(
                                 painterResource(R.drawable.photocell), contentDescription = "Photocell",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
-                            )*/
+                            )
                             "Soil Sensor" -> Image(
                                 painterResource(R.drawable.soilsensor), contentDescription = "soilSensor",
                                 modifier = Modifier.size(24.dp),
@@ -162,7 +166,7 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            /*"Button1" -> Image(
+                            "Button1" -> Image(
                                 painterResource(R.drawable.button1), contentDescription = "button1",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
@@ -171,7 +175,7 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 painterResource(R.drawable.button2), contentDescription = "button2",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
-                            )*/
+                            )
                         }
                     }
                 ) { newState ->
@@ -192,5 +196,14 @@ fun BottomNavigation(navController: NavHostController,  sharedViewModel: SharedV
         onModeClick = { navController.navigate(Screen.ModesScreen.route) },
         onLogoutClick = { sharedViewModel.logout() }
 
+    )
+}
+
+@Composable
+fun TenantBottomNavigation(navController: NavHostController, sharedViewModel: SharedViewModel) {
+    TenantBottomBar(
+        onHomeClick = { navController.navigate(Screen.HomeScreen.route) },
+        onModeClick = { navController.navigate(Screen.ModesScreen.route) },
+        onLogoutClick = { sharedViewModel.logout() }
     )
 }
