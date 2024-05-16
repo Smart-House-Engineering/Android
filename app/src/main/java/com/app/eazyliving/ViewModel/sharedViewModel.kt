@@ -74,7 +74,7 @@ private fun processLoginResult(token: String) {
         _userEmail.value = it.email
         _navigationDestination.value = when (it.role) {
             "OWNER" -> "HomeScreen"
-            "TENANT" -> "SubUserScreen"
+            "TENANT" -> "HomeScreen"
             "EXTERNAL" -> "ExternalScreen"
             else -> null
         }

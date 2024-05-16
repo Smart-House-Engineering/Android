@@ -23,7 +23,7 @@ import androidx.compose.ui.window.DialogProperties
 fun AddUserDialog(
     showDialog: Boolean,
     onDismiss: () -> Unit,
-    onUserAdded: (String, String,String) -> Unit
+    onUserAdded: (String, String, String) -> Unit
 ) {
     if (showDialog) {
         val focusManager = LocalFocusManager.current
@@ -32,14 +32,13 @@ fun AddUserDialog(
             onDismissRequest = { onDismiss() },
             properties = DialogProperties(dismissOnClickOutside = false)
         ) {
-                Surface(
-                    modifier = Modifier
-                        .width(400.dp)
-                        .height(400.dp),
-                    color = Color(0xFFC4E2FB),
-                    shape = RoundedCornerShape(5)
-
-                ) {
+            Surface(
+                modifier = Modifier
+                    .width(400.dp)
+                    .height(400.dp),
+                color = Color(0xFFC4E2FB),
+                shape = RoundedCornerShape(5)
+            ) {
                 Column(
                     modifier = Modifier.padding(25.dp),
                     verticalArrangement = Arrangement.Center,
@@ -51,11 +50,10 @@ fun AddUserDialog(
                     )
                     var userEmail by remember { mutableStateOf("") }
                     var password by remember { mutableStateOf("") }
-
-                    var role by remember { mutableStateOf("") }
+                    var confirmPassword by remember { mutableStateOf("") }
+                    val role = "TENANT"
 
                     Spacer(modifier = Modifier.height(20.dp))
-
 
                     OutlinedTextField(
                         value = userEmail,
@@ -77,28 +75,35 @@ fun AddUserDialog(
                         modifier = Modifier.fillMaxWidth(),
                         visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Done,
+                            imeAction = ImeAction.Next,
                             keyboardType = KeyboardType.Password
                         ),
                     )
                     OutlinedTextField(
-                        value = role,
-                        onValueChange = { role = it },
-                        label = { Text("Role") },
+                        value = confirmPassword,
+                        onValueChange = { confirmPassword = it },
+                        label = { Text("Confirm Password") },
                         modifier = Modifier.fillMaxWidth(),
+                        visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions.Default.copy(
                             imeAction = ImeAction.Done,
-                            keyboardType = KeyboardType.Text
+                            keyboardType = KeyboardType.Password
                         ),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                onUserAdded(userEmail, password, role)
-                                userEmail = ""
-                                password = ""
-                                role = ""
-                                onDismiss()
-                            }
+                    )
+
+                    if (password != confirmPassword && confirmPassword.isNotBlank()) {
+                        Text(
+                            text = "Passwords don't match",
+                            color = Color.Red,
+                            modifier = Modifier.fillMaxWidth()
                         )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        text = "Role: $role",
+                        modifier = Modifier.fillMaxWidth()
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -113,11 +118,13 @@ fun AddUserDialog(
                         }
                         Button(
                             onClick = {
-                                onUserAdded(userEmail, password, role)
-                                userEmail = ""
-                                password = ""
-                                role = ""
-                                onDismiss()
+                                if (password == confirmPassword) {
+                                    onUserAdded(userEmail, password, role)
+                                    userEmail = ""
+                                    password = ""
+                                    confirmPassword = ""
+                                    onDismiss()
+                                }
                             }
                         ) {
                             Text("Register")
