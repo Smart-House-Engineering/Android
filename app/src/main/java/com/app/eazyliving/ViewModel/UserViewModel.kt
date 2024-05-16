@@ -20,7 +20,6 @@ class UserViewModel(private val apiService: ApiService) : ViewModel() {
     private val _uiState = MutableStateFlow<UserUIState>(UserUIState.Idle)
     val uiState = _uiState.asStateFlow()
 
-
     fun addUser(email: String, password: String, role: String) {
         _uiState.value = UserUIState.Loading
         viewModelScope.launch {
@@ -36,5 +35,4 @@ class UserViewModel(private val apiService: ApiService) : ViewModel() {
             }
         }
     }
-
 }

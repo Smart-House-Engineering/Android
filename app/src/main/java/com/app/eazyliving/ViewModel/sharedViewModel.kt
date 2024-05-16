@@ -65,7 +65,6 @@ class SharedViewModel(private val apiCalls: ApiCalls,private val sessionReposito
         }
     }
 
-
     @RequiresApi(Build.VERSION_CODES.O)
     private fun processLoginResult(token: String) {
         val jwtPayload = decodeJWTAndExtractData(token)
