@@ -9,6 +9,7 @@ import com.app.eazyliving.model.UserCredentials
 import com.app.eazyliving.model.UserDetails
 import com.app.eazyliving.network.ApiService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +19,7 @@ import kotlinx.coroutines.withContext
 sealed class UserUIState {
     object Idle : UserUIState()
     object Loading : UserUIState()
-    class Success(val message: String) : UserUIState()
+    class Success(val message: String, val showToast: Boolean = true) : UserUIState()
     class Error(val error: String) : UserUIState()
 }
 
@@ -37,6 +38,8 @@ class UserViewModel(private val apiService: ApiService) : ViewModel() {
                 val response = apiService.addUsers(UserCredentials(email, password, role))
                 if (response.isSuccessful) {
                     _uiState.value = UserUIState.Success("User added successfully")
+                    delay(2000)
+                    fetchUsers()
                 } else {
                     _uiState.value = UserUIState.Error("Failed to add user: ${response.message()}")
                 }
@@ -52,9 +55,9 @@ class UserViewModel(private val apiService: ApiService) : ViewModel() {
             try {
                 val response = apiService.getUsers()
                 if (response.isSuccessful) {
-                    // Assuming response.body() returns a List<User>
                     val filteredUsers = response.body()?.filter { it.role != "OWNER" } ?: emptyList()
                     _users.value = filteredUsers
+                    _uiState.value = UserUIState.Success("Users fetched successfully", showToast = false )
                 } else {
                     _uiState.value = UserUIState.Error("Failed to fetch users: ${response.message()}")
                 }
@@ -63,22 +66,25 @@ class UserViewModel(private val apiService: ApiService) : ViewModel() {
             }
         }
     }
-fun deleteUser(email: String) {
-    _uiState.value = UserUIState.Loading
-    viewModelScope.launch {
-        try {
-            val deleteUserRequest = DeleteUser(deleteUserEmail = email)
-            val response = apiService.deleteUser(deleteUserRequest)
-            if (response.isSuccessful) {
-                _uiState.value = UserUIState.Success("User deleted successfully")
-                fetchUsers()
-            } else {
-                _uiState.value = UserUIState.Error("Failed to delete user: ${response.message()}")
+
+    fun deleteUser(email: String) {
+        _uiState.value = UserUIState.Loading
+        viewModelScope.launch {
+            try {
+                val deleteUserRequest = DeleteUser(deleteUserEmail = email)
+                val response = apiService.deleteUser(deleteUserRequest)
+                if (response.isSuccessful) {
+                    _uiState.value = UserUIState.Success("User deleted successfully")
+                    delay(2000)
+                    fetchUsers()
+                } else {
+                    _uiState.value = UserUIState.Error("Failed to delete user: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _uiState.value = UserUIState.Error("An error occurred: ${e.localizedMessage}")
             }
-        } catch (e: Exception) {
-            _uiState.value = UserUIState.Error("An error occurred: ${e.localizedMessage}")
         }
     }
-}
+
 
 }

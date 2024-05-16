@@ -40,7 +40,7 @@ import com.app.eazyliving.ViewModel.UserUIState
 import com.app.eazyliving.ViewModel.UserViewModel
 import com.app.eazyliving.components.AddUserDialog
 import com.app.eazyliving.components.Header
-import com.app.eazyliving.model.UserDetails
+
 
 @Composable
 fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = viewModel(), sharedViewModel: SharedViewModel) {
@@ -57,7 +57,10 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
     LaunchedEffect(key1 = uiState) {
         when (uiState) {
             is UserUIState.Success -> {
-                Toast.makeText(context, uiState.message, Toast.LENGTH_LONG).show()
+                if(uiState.showToast) {
+                    Toast.makeText(context, uiState.message, Toast.LENGTH_LONG).show()
+                }
+
 
             }
             is UserUIState.Error -> {
@@ -75,7 +78,7 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
 
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             Header()
             Text(
@@ -85,7 +88,7 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
             )
             Button(
                 onClick = { showDialog = true },
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             ) {
                 Text(
                     text = "Add User",
@@ -102,8 +105,8 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
                     userViewModel.addUser(userEmail, password, role)
                 }
             )
-            LazyColumn {
-                items(users) { user ->
+            LazyColumn(modifier = Modifier.weight(1f).padding(bottom = 60.dp)) {
+            items(users) { user ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
