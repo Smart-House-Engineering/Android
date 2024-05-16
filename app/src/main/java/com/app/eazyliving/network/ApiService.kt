@@ -1,5 +1,6 @@
 package com.app.eazyliving.network
 
+import com.app.eazyliving.model.DeleteUser
 import com.app.eazyliving.model.DevicesResponse
 import com.app.eazyliving.model.LoginCredentials
 import com.app.eazyliving.model.UpdateResponse
@@ -33,6 +34,9 @@ interface ApiService {
 
     @GET("/api/user/allMembers")
     suspend fun getUsers():Response<List<UserDetails>>
+
+    @HTTP(method = "DELETE", path = "/api/owner/deleteUser/", hasBody = true)
+    suspend fun deleteUser(@Body request: DeleteUser): Response<ResponseBody>
 }
 
 

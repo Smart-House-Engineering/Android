@@ -55,7 +55,6 @@ class UserViewModel(private val apiService: ApiService) : ViewModel() {
                     // Assuming response.body() returns a List<User>
                     val filteredUsers = response.body()?.filter { it.role != "OWNER" } ?: emptyList()
                     _users.value = filteredUsers
-                    _uiState.value = UserUIState.Success("Users fetched successfully")
                 } else {
                     _uiState.value = UserUIState.Error("Failed to fetch users: ${response.message()}")
                 }
@@ -72,7 +71,7 @@ fun deleteUser(email: String) {
             val response = apiService.deleteUser(deleteUserRequest)
             if (response.isSuccessful) {
                 _uiState.value = UserUIState.Success("User deleted successfully")
-                // Refresh user list or handle success
+                fetchUsers()
             } else {
                 _uiState.value = UserUIState.Error("Failed to delete user: ${response.message()}")
             }

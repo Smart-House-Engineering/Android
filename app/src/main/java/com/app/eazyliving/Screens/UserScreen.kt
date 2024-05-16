@@ -68,11 +68,11 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
     }
 
     Column(
-
+        modifier = Modifier.fillMaxSize()
+            .padding(horizontal = 24.dp, vertical = 30.dp),
     verticalArrangement = Arrangement.spacedBy(20.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 30.dp)
+
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -115,6 +115,9 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
                             text = "${user.email} (${user.role})",
                             style = MaterialTheme.typography.bodySmall
                         )
+                        IconButton(onClick = { userViewModel.deleteUser(user.email) }) {
+                            Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete user")
+                        }
                         }
                     }
                 }
@@ -124,15 +127,8 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
         Column(modifier = Modifier
             .fillMaxSize(),
             verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally)
+            horizontalAlignment = Alignment.End)
         {
-            TextButton(
-                onClick = { navController.popBackStack() }
-            ) {
-                Text("Back", style = TextStyle(fontSize = 18.sp))
-            }
             BottomNavigation(navController, sharedViewModel)
         }
     }
-
-}
