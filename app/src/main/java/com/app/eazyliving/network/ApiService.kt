@@ -1,10 +1,10 @@
 package com.app.eazyliving.network
 
-import com.app.eazyliving.model.Devices
 import com.app.eazyliving.model.DevicesResponse
 import com.app.eazyliving.model.LoginCredentials
 import com.app.eazyliving.model.UpdateResponse
 import com.app.eazyliving.model.UserCredentials
+import com.app.eazyliving.model.UserDetails
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
@@ -30,5 +30,10 @@ interface ApiService {
 
     @POST("/api/owner/addUser/")
     suspend fun addUsers(@Body userData: UserCredentials): Response<ResponseBody>
+
+    @GET("/api/user/allMembers")
+    suspend fun getUsers():Response<List<UserDetails>>
 }
+
+
 
