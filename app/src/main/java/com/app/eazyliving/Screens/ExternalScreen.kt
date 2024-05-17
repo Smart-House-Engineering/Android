@@ -44,7 +44,7 @@ fun ExternalScreen(navController: NavHostController, sharedViewModel: SharedView
             modifier = Modifier.padding(top = 16.dp)
         )
         sensorData.forEach { data ->
-            Text(text = "Sensor: ${data.sensorName}, Status: ${data.switchState}")
+            Text(text = "Sensor: ${data.sensorName}, Status: ${data.switchStateInt}")
         }
 
         Column(modifier = Modifier
