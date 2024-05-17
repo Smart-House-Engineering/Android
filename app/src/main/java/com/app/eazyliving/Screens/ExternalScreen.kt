@@ -26,7 +26,9 @@ import com.app.eazyliving.ViewModel.SharedViewModel
 import com.app.eazyliving.components.Header
 import com.app.eazyliving.components.UserCard
 import com.app.eazyliving.components.DateCard
+import com.app.eazyliving.components.ExternalBottomBar
 import com.app.eazyliving.components.ExternalSensorCard
+import com.app.eazyliving.components.TenantBottomBar
 import com.app.eazyliving.model.SensorData
 
 @Composable
@@ -60,7 +62,9 @@ fun ExternalScreen(navController: NavHostController, sharedViewModel: SharedView
         Box(modifier = Modifier.weight(1f)) {
             sensors?.let { ExternalSensorsGrid(it, sharedViewModel) }
         }
-        // Bottom bar
+        when (userRole) {
+            "EXTERNAL" -> ExternalBottomNavigation(navController, sharedViewModel)
+        }
     }
 }
 
@@ -161,4 +165,12 @@ fun ExternalSensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewMo
             }
         }
     }
+}
+
+@Composable
+fun ExternalBottomNavigation(navController: NavHostController, sharedViewModel: SharedViewModel) {
+    ExternalBottomBar(
+        onHomeClick = { navController.navigate(Screen.HomeScreen.route) },
+        onLogoutClick = { sharedViewModel.logout() }
+    )
 }
