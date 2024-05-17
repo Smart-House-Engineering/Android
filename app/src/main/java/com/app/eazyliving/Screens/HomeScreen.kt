@@ -34,18 +34,18 @@ fun HomeScreen(navController: NavHostController,
     val isLoggedIn by sharedViewModel.isLoggedIn.collectAsState()
     LaunchedEffect(isLoggedIn) {
         if (!isLoggedIn) {
-                sharedViewModel.stopSensorUpdates()  // Ensure updates are stopped before navigation
+            sharedViewModel.stopSensorUpdates()
 
-                try {
-                    navController.navigate(Screen.LoginScreen.route) {
-                        popUpTo(Screen.HomeScreen.route) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                } catch (e: Exception) {
-                    Log.e("NavigationError", "Failed to navigate: ${e.localizedMessage}")
+            try {
+                navController.navigate(Screen.LoginScreen.route) {
+                    popUpTo(Screen.HomeScreen.route) { inclusive = true }
+                    launchSingleTop = true
                 }
+            } catch (e: Exception) {
+                Log.e("NavigationError", "Failed to navigate: ${e.localizedMessage}")
             }
-       else {
+        }
+        else {
             sharedViewModel.startSensorUpdates()
         }
     }
@@ -84,7 +84,7 @@ fun UserInfoRow(userEmail: String?, userRole: String?) {
 @Composable
 fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
     val filteredSensors = sensors.filterNot { sensor ->
-        sensor.sensorName in listOf("button1", "button2", "motion", "photocell")
+        sensor.sensorName in listOf("button1", "button2", "motion", "photocell", "RFan")
     }
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -98,7 +98,8 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
 
                 SensorCard(
                     sensorName = sensor.sensorName,
-                    switchState = sensor.switchState,
+                    switchStateInt = sensor.switchStateInt,
+                    switchStateBool = sensor.switchStateBool,
                     sensorIcon = {
                         when (sensor.sensorName) {
 
@@ -113,13 +114,18 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "RFan" -> Image(
+                            /*"RFan" -> Image(
                                 painterResource(R.drawable.rfan), contentDescription = "RFan",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
-                            )
-
+                            )*/
+//                            "motion" -> Image(
+//                                painterResource(R.drawable.motion), contentDescription = "Motion",
+//                                modifier = Modifier.size(24.dp),
+//                                contentScale = ContentScale.Fit
+//                            )
                             "buzzer" -> Image(
+
                                 painterResource(R.drawable.buzzer), contentDescription = "Buzzer",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
@@ -145,6 +151,7 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 contentScale = ContentScale.Fit
                             )
                             "soilSensor" -> Image(
+
                                 painterResource(R.drawable.soilsensor), contentDescription = "soilSensor",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
@@ -159,6 +166,17 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
+//                            "button1" -> Image(
+//                                painterResource(R.drawable.button1), contentDescription = "button1",
+//                                modifier = Modifier.size(24.dp),
+//                                contentScale = ContentScale.Fit
+//                            )
+//                            "button2" -> Image(
+//                                painterResource(R.drawable.button2), contentDescription = "button2",
+//                                modifier = Modifier.size(24.dp),
+//                                contentScale = ContentScale.Fit
+//                            )
+
                         }
                     }
                 ) { newState ->
@@ -167,9 +185,9 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                 }
                 Spacer(modifier = Modifier.height(8.dp)) // Add some space between sensor cards
             }
-    }
         }
     }
+}
 
 @Composable
 fun BottomNavigation(navController: NavHostController,  sharedViewModel: SharedViewModel) {
@@ -190,3 +208,4 @@ fun TenantBottomNavigation(navController: NavHostController, sharedViewModel: Sh
         onLogoutClick = { sharedViewModel.logout() }
     )
 }
+
