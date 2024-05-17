@@ -77,31 +77,32 @@ object Retrofit {
     }
 
 
-    class RetryInterceptor(private val maxRetries: Int, private val backoff: Long) : Interceptor {
-        override fun intercept(chain: Interceptor.Chain): Response {
-            var request = chain.request()
+class RetryInterceptor(private val maxRetries: Int, private val backoff: Long) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        var request = chain.request()
+        var response: Response
+        var tryCount = 0
 
-            if (request.url.encodedPath.endsWith("/logout")) {
-                return chain.proceed(request)
-            }
-
-            var response = chain.proceed(request)
-            var tryCount = 0
-
-            while (!response.isSuccessful && tryCount < maxRetries) {
-                val nextDelay = 2.0.pow(tryCount.toDouble()).toLong() * backoff
-                response.close()
-                tryCount++
-                Thread.sleep(nextDelay)
-                request = request.newBuilder().build()
+        while (true) {
+            try {
                 response = chain.proceed(request)
+                if (response.isSuccessful) {
+                    return response
+                }
+                response.close()
+            } catch (e: IOException) { // Catch network-related exceptions here
+                if (tryCount >= maxRetries) throw e
             }
 
-            return response
+            val nextDelay = 2.0.pow(tryCount.toDouble()).toLong() * backoff
+            tryCount++
+            Thread.sleep(nextDelay)
+            request = request.newBuilder().build() // Rebuild the request if needed
         }
     }
+}
 
-val apiService: ApiService by lazy {
+    val apiService: ApiService by lazy {
     val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
     val clientBuilder = OkHttpClient.Builder()
         .addInterceptor(logging)

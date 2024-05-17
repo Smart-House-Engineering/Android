@@ -22,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.app.eazyliving.R
 import com.app.eazyliving.ViewModel.SharedViewModel
+import com.app.eazyliving.components.TenantBottomBar
 
 
 @Composable
@@ -33,18 +34,18 @@ fun HomeScreen(navController: NavHostController,
     val isLoggedIn by sharedViewModel.isLoggedIn.collectAsState()
     LaunchedEffect(isLoggedIn) {
         if (!isLoggedIn) {
-                sharedViewModel.stopSensorUpdates()  // Ensure updates are stopped before navigation
+            sharedViewModel.stopSensorUpdates()
 
-                try {
-                    navController.navigate(Screen.LoginScreen.route) {
-                        popUpTo(Screen.HomeScreen.route) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                } catch (e: Exception) {
-                    Log.e("NavigationError", "Failed to navigate: ${e.localizedMessage}")
+            try {
+                navController.navigate(Screen.LoginScreen.route) {
+                    popUpTo(Screen.HomeScreen.route) { inclusive = true }
+                    launchSingleTop = true
                 }
+            } catch (e: Exception) {
+                Log.e("NavigationError", "Failed to navigate: ${e.localizedMessage}")
             }
-       else {
+        }
+        else {
             sharedViewModel.startSensorUpdates()
         }
     }
@@ -55,8 +56,11 @@ fun HomeScreen(navController: NavHostController,
         Box(modifier = Modifier.weight(1f)) {
             sensors?.let { SensorsGrid(it, sharedViewModel) }
         }
-
-        BottomNavigation(navController,sharedViewModel)
+        // Render bottom bar based on user role
+        when (userRole) {
+            "TENANT" -> TenantBottomNavigation(navController, sharedViewModel)
+            "OWNER" -> BottomNavigation(navController, sharedViewModel)
+        }
 
     }
 
@@ -79,99 +83,100 @@ fun UserInfoRow(userEmail: String?, userRole: String?) {
 
 @Composable
 fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
+    val filteredSensors = sensors.filterNot { sensor ->
+        sensor.sensorName in listOf("button1", "button2", "motion", "photocell", "RFan")
+    }
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        if (sensors.isNotEmpty()) {
-            items(items = sensors, key = { sensor -> sensor.sensorName }) { sensor ->
+        if (filteredSensors.isNotEmpty()) {
+            items(items = filteredSensors, key = { sensor -> sensor.sensorName }) { sensor ->
                 Log.d("sensorData", sensor.toString())
 
                 SensorCard(
                     sensorName = sensor.sensorName,
-                    switchState = sensor.switchState,
+                    switchStateInt = sensor.switchStateInt,
+                    switchStateBool = sensor.switchStateBool,
                     sensorIcon = {
                         when (sensor.sensorName) {
 
-                            "y" +
-                                    "Yellow Ledlight" -> Image(
+                            "yellowLed" -> Image(
                                 painterResource(R.drawable.lights),
                                 contentDescription = "yellowLed",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Fan" -> Image(
+                            "fan" -> Image(
                                 painterResource(R.drawable.fan), contentDescription = "Fan",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "RFan" -> Image(
+                            /*"RFan" -> Image(
                                 painterResource(R.drawable.rfan), contentDescription = "RFan",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
-                            )
-                            "Motion" -> Image(
-                                painterResource(R.drawable.motion), contentDescription = "Motion",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                            "Buzzer" -> Image(
+                            )*/
+//                            "motion" -> Image(
+//                                painterResource(R.drawable.motion), contentDescription = "Motion",
+//                                modifier = Modifier.size(24.dp),
+//                                contentScale = ContentScale.Fit
+//                            )
+                            "buzzer" -> Image(
+
                                 painterResource(R.drawable.buzzer), contentDescription = "Buzzer",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Relay" -> Image(
+                            "relay" -> Image(
                                 painterResource(R.drawable.relay), contentDescription = "relay",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Door" -> Image(
+                            "door" -> Image(
                                 painterResource(R.drawable.door), contentDescription = "door",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Window" -> Image(
+                            "window" -> Image(
                                 painterResource(R.drawable.window), contentDescription = "window",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Gas Sensor" -> Image(
+                            "gasSensor" -> Image(
                                 painterResource(R.drawable.gassensor), contentDescription = "gasSensor",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Photocell" -> Image(
-                                painterResource(R.drawable.photocell), contentDescription = "Photocell",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                            "Soil Sensor" -> Image(
+                            "soilSensor" -> Image(
+
                                 painterResource(R.drawable.soilsensor), contentDescription = "soilSensor",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Steam Sensor" -> Image(
+                            "steamSensor" -> Image(
                                 painterResource(R.drawable.steamsensor), contentDescription = "steamSensor",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "White Ledlight" -> Image(
+                            "whiteLed" -> Image(
                                 painterResource(R.drawable.whiteled), contentDescription = "whiteLed",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Button1" -> Image(
-                                painterResource(R.drawable.button1), contentDescription = "button1",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                            "Button2" -> Image(
-                                painterResource(R.drawable.button2), contentDescription = "button2",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
+//                            "button1" -> Image(
+//                                painterResource(R.drawable.button1), contentDescription = "button1",
+//                                modifier = Modifier.size(24.dp),
+//                                contentScale = ContentScale.Fit
+//                            )
+//                            "button2" -> Image(
+//                                painterResource(R.drawable.button2), contentDescription = "button2",
+//                                modifier = Modifier.size(24.dp),
+//                                contentScale = ContentScale.Fit
+//                            )
+
                         }
                     }
                 ) { newState ->
@@ -180,9 +185,9 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                 }
                 Spacer(modifier = Modifier.height(8.dp)) // Add some space between sensor cards
             }
-    }
         }
     }
+}
 
 @Composable
 fun BottomNavigation(navController: NavHostController,  sharedViewModel: SharedViewModel) {
@@ -194,3 +199,13 @@ fun BottomNavigation(navController: NavHostController,  sharedViewModel: SharedV
 
     )
 }
+
+@Composable
+fun TenantBottomNavigation(navController: NavHostController, sharedViewModel: SharedViewModel) {
+    TenantBottomBar(
+        onHomeClick = { navController.navigate(Screen.HomeScreen.route) },
+        onModeClick = { navController.navigate(Screen.ModesScreen.route) },
+        onLogoutClick = { sharedViewModel.logout() }
+    )
+}
+

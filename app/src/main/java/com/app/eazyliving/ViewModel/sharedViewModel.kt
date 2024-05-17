@@ -1,13 +1,10 @@
 package com.app.eazyliving.ViewModel
 
-import android.app.Application
-import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.eazyliving.components.SessionRepository
@@ -29,101 +26,101 @@ class SharedViewModel(private val apiCalls: ApiCalls,private val sessionReposito
     private var currentDevices: DeviceList? = null
 
     private val _loginState = MutableLiveData<LoginState>()
-    val loginState: LiveData<LoginState> = _loginState // Represents the current state of the login process.
+    val loginState: LiveData<LoginState> = _loginState
 
     private val _userEmail = MutableLiveData<String?>()
-    val userEmail: LiveData<String?> = _userEmail // Represents the email of the currently logged in user.
+    val userEmail: LiveData<String?> = _userEmail
 
     private val _userRole = MutableLiveData<String?>()
-    val userRole: LiveData<String?> = _userRole // Represents the role of the currently logged in user.
+    val userRole: LiveData<String?> = _userRole
 
     private val _navigationDestination = MutableLiveData<String?>()
-    val navigationDestination: LiveData<String?> = _navigationDestination // Determines the next screen to navigate to after login, based on the user's role.
+    val navigationDestination: LiveData<String?> = _navigationDestination
 
     private val _sensors = MutableLiveData<List<SensorData>>(emptyList())
-    val sensors: LiveData<List<SensorData>> = _sensors // Represents the current state of the sensors.
+    val sensors: LiveData<List<SensorData>> = _sensors
 
     private val _isLoggedIn = MutableStateFlow(true)
-    val isLoggedIn = _isLoggedIn.asStateFlow() // Represents the current login status of the user.
+    val isLoggedIn = _isLoggedIn.asStateFlow()
 
     private val _shouldUpdateSensors = MutableStateFlow(true)
-    val shouldUpdateSensors: StateFlow<Boolean> = _shouldUpdateSensors.asStateFlow() // Determines whether the sensors should be updated.
+    val shouldUpdateSensors: StateFlow<Boolean> = _shouldUpdateSensors.asStateFlow()
 
-    private var sensorUpdateJob: Job? = null // Job that fetches sensor data at regular intervals.
+    private var sensorUpdateJob: Job? = null
 
-    // Attempts to log in a user with the provided email and password.
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun login(email: String, password: String) {
-        viewModelScope.launch {
-            _loginState.value = LoginState.Loading
-            val result = apiCalls.login(LoginCredentials(email, password))
-            if (result != null) {
-                processLoginResult(result)
-            } else {
-                _loginState.value = LoginState.Error("Login failed")
-            }
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun login(email: String, password: String) {
+    viewModelScope.launch {
+        _loginState.value = LoginState.Loading
+        val result = apiCalls.login(LoginCredentials(email, password))
+        if (result != null) {
+            processLoginResult(result)
+        } else {
+            _loginState.value = LoginState.Error("Login failed")
         }
     }
+}
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun processLoginResult(token: String) {
-        val jwtPayload = decodeJWTAndExtractData(token)
-        jwtPayload?.let {
-            _userRole.value = it.role
-            _userEmail.value = it.email
-            _navigationDestination.value = when (it.role) {
-                "OWNER" -> "HomeScreen"
-                "TENANT" -> "SubUserScreen"
-                "EXTERNAL" -> "ExternalScreen"
-                else -> null
-            }
-            _loginState.value = LoginState.Success(it.role)
-        } ?: run {
-            _loginState.value = LoginState.Error("Failed to decode JWT or determine user role")
+
+@RequiresApi(Build.VERSION_CODES.O)
+private fun processLoginResult(token: String) {
+    val jwtPayload = decodeJWTAndExtractData(token)
+    jwtPayload?.let {
+        _userRole.value = it.role
+        _userEmail.value = it.email
+        _isLoggedIn.value = true
+        _navigationDestination.value = when (it.role) {
+            "OWNER" -> "HomeScreen"
+            "TENANT" -> "HomeScreen"
+            "EXTERNAL" -> "ExternalScreen"
+            else -> null
         }
+        _loginState.value = LoginState.Success(it.role)
+    } ?: run {
+        _loginState.value = LoginState.Error("Failed to decode JWT or determine user role")
     }
+}
 
-    // Resets the navigation destination to null.
-    fun resetNavigationDestination() {
+    private fun resetNavigationDestination() {
         _navigationDestination.value = null
     }
 
-    // Fetches the current state of the sensors.
-    fun getSensors() {
-        viewModelScope.launch {
-            try {
-                val fetchedSensors = apiCalls.getSensors()
-                Log.d("fetchedSensors", "Fetched sensors: $fetchedSensors")
-                if (fetchedSensors != null) {
-                    // Log individual sensor details for clarity
-                    fetchedSensors.forEach { sensor ->
-                        Log.d(
-                            "SharedViewModel",
-                            "Sensor: ${sensor.sensorName}, State: ${sensor.switchState}"
-                        )
-                    }
-                    Log.d("SharedViewModel", "Posting fetched sensors to LiveData: $fetchedSensors")
-                    _sensors.postValue(fetchedSensors as List<SensorData>?)
-                } else {
-                    Log.d("SharedViewModel", "Fetched sensors is null")
-                    _sensors.postValue(emptyList())
-                }
-            } catch (e: Exception) {
-                Log.e("SharedViewModel", "Error fetching sensors", e)
-                _sensors.postValue(emptyList())
 
+/*fun getSensors() {
+    viewModelScope.launch {
+        try {
+            val fetchedSensors = apiCalls.getSensors()
+            Log.d("fetchedSensors", "Fetched sensors: $fetchedSensors")
+            if (fetchedSensors != null) {
+                // Log individual sensor details for clarity
+                fetchedSensors.forEach { sensor ->
+                    Log.d(
+                        "SharedViewModel",
+                        "Sensor: ${sensor.sensorName}, State: ${sensor.switchState}"
+                    )
+                }
+                Log.d("SharedViewModel", "Posting fetched sensors to LiveData: $fetchedSensors")
+                _sensors.postValue(fetchedSensors as List<SensorData>?)
+            } else {
+                Log.d("SharedViewModel", "Fetched sensors is null")
+                _sensors.postValue(emptyList())
             }
+        } catch (e: Exception) {
+            Log.e("SharedViewModel", "Error fetching sensors", e)
+            _sensors.postValue(emptyList())
+
         }
     }
+}*/
 
-    // Updates the state of a sensor with the provided name to the new state.
-    fun updateSensors(sensorName: String, newState: Boolean) {
+    fun updateSensors(sensorName: String, newState: Any) { // Change parameter type to Any
         viewModelScope.launch {
             val updatedSensorValue = when (sensorName) {
-                // Directly map sensor names to their new Boolean state.
+                // Directly map sensor names to their new state.
                 "fan", "lights", "RFan", "motion", "buzzer", "relay", "whiteLed", "button1", "button2" -> newState
-                // Convert Boolean to Int for specific sensors.
-                "yellowLed", "door", "window", "gasSensor", "photocell", "soilSensor", "steamSensor" -> if (newState) 1 else 0
+                // For sensors with integer state, convert boolean newState to integer.
+                "yellowLed", "door", "window", "gasSensor", "photocell", "soilSensor", "steamSensor" -> if (newState is Boolean) if (newState) 1 else 0 else newState
                 else -> null
             }
 
@@ -140,24 +137,13 @@ class SharedViewModel(private val apiCalls: ApiCalls,private val sessionReposito
                         // Map the updated devices from the response back to sensor data objects.
                         val updatedSensors = _sensors.value?.map { sensor ->
                             when (sensor.sensorName) {
-                                "fan" -> sensor.copy(switchState = devices.fan)
-                                "RFan" -> sensor.copy(switchState = devices.RFan)
-                                "motion" -> sensor.copy(switchState = devices.motion)
-                                "buzzer" -> sensor.copy(switchState = devices.buzzer)
-                                "relay" -> sensor.copy(switchState = devices.relay)
-                                "whiteLed" -> sensor.copy(switchState = devices.whiteLed)
-                                "button1" -> sensor.copy(switchState = devices.button1)
-                                "button2" -> sensor.copy(switchState = devices.button2)
-                                "yellowLed" -> sensor.copy(switchState = devices.yellowLed > 0)
-                                "servo1" -> sensor.copy(switchState = devices.door > 0)
-                                "servo2" -> sensor.copy(switchState = devices.window > 0)
-                                "gasSensor" -> sensor.copy(switchState = devices.gasSensor > 0)
-                                "photocell" -> sensor.copy(switchState = devices.photocell > 0)
-                                "soilSensor" -> sensor.copy(switchState = devices.soilSensor > 0)
-                                "steamSensor" -> sensor.copy(switchState = devices.steamSensor > 0)
+                                // For Boolean sensors, update the switch state
+                                "fan", "RFan", "motion", "buzzer", "relay", "whiteLed", "button1", "button2" -> if (sensor.sensorName == sensorName) sensor.copy(switchStateBool = newState as Boolean) else sensor
+                                // For Integer sensors, update the switch state
+                                "yellowLed", "door", "window", "gasSensor", "photocell", "soilSensor", "steamSensor" -> if (sensor.sensorName == sensorName) sensor.copy(switchStateInt = newState as Int) else sensor
                                 else -> sensor
                             }
-                        } ?: emptyList()
+                        }?.toList() ?: emptyList()
 
                         _sensors.postValue(updatedSensors)
                     } else {
@@ -179,45 +165,45 @@ class SharedViewModel(private val apiCalls: ApiCalls,private val sessionReposito
         }
     }
 
-    // Starts a repeating job that fetches the current sensor data every 5 seconds.
-    fun startSensorUpdates() {
-        viewModelScope.launch {
-            sensorUpdateJob = viewModelScope.launch {
-                while (isActive) {
-                    try {
-                        val fetchedSensors = apiCalls.getSensors()
-                        if (fetchedSensors != null) {
-                            _sensors.postValue(fetchedSensors!!)
-                        }
-                        delay(5000)
-                    } catch (e: Exception) {
-                        Log.e("SharedViewModel", "Error fetching sensors", e)
+
+fun startSensorUpdates() {
+    viewModelScope.launch {
+        sensorUpdateJob = viewModelScope.launch {
+            while (isActive) {
+                try {
+                    val fetchedSensors = apiCalls.getSensors()
+                    if (fetchedSensors != null) {
+                        _sensors.postValue(fetchedSensors!!)
                     }
+                    delay(5000)
+                } catch (e: Exception) {
+                    Log.e("SharedViewModel", "Error fetching sensors", e)
                 }
             }
         }
     }
+}
 
-    // Stops the repeating job that fetches the current sensor data.
-    fun stopSensorUpdates() {
+fun stopSensorUpdates() {
+    sensorUpdateJob?.cancel()
+    sensorUpdateJob = null
+
+    _sensors.postValue(emptyList())
+}
+fun logout() {
+    viewModelScope.launch {
         sensorUpdateJob?.cancel()
         sensorUpdateJob = null
-
-        _sensors.postValue(emptyList())
-    }
-
-    // Logs out the current user, cancels the sensor update job, and clears the sensor data.
-    fun logout() {
-        viewModelScope.launch {
-            sensorUpdateJob?.cancel()
-            sensorUpdateJob = null
-            val success = sessionRepository.logout()
-            if (success) {
-                _isLoggedIn.value = false
-                _sensors.postValue(emptyList())
-            }
+        val success = sessionRepository.logout()
+        if (success) {
+            _isLoggedIn.value = false
+            _sensors.postValue(emptyList())
+            resetNavigationDestination()
+            stopSensorUpdates()
         }
     }
+}
+
 }
 
 sealed class LoginState {

@@ -106,15 +106,10 @@ fun LoginScreen(navController: NavHostController, sharedViewModel: SharedViewMod
                 }
             },
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { /* Handle the login action */ })
+            keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()})
         )
         Spacer(modifier = Modifier.height(24.dp))
-        Text(
-            "Forgot Password?",
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable(onClick = { /* Handle forgot password */ })
-        )
-        Spacer(modifier = Modifier.height(24.dp))
+
         Button(
             onClick = {  sharedViewModel.login(email, password)},
             colors = ButtonDefaults.buttonColors(
@@ -131,7 +126,7 @@ fun LoginScreen(navController: NavHostController, sharedViewModel: SharedViewMod
 
         if (loginState is LoginState.Loading) {
             Spacer(modifier = Modifier.height(16.dp))
-            CircularProgressIndicator() // This displays the loading indicator
+            CircularProgressIndicator()
         } else if (loginState is LoginState.Error) {
             val errorMessage = (loginState as LoginState.Error).message
             Text(text = errorMessage, color = MaterialTheme.colorScheme.error)

@@ -3,9 +3,18 @@ package com.app.eazyliving.Screens
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,18 +40,23 @@ import com.app.eazyliving.components.Header
 
 @Composable
 fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = viewModel(), sharedViewModel: SharedViewModel) {
-    var showDialog by remember { mutableStateOf(false)
-    }
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedRole by remember { mutableStateOf("") } // Initialize with a default role
+
     val uiState = userViewModel.uiState.collectAsState().value
     val context = LocalContext.current
+    val users by userViewModel.users.collectAsState()
 
-    LaunchedEffect(uiState) {
+    LaunchedEffect(key1 = true) {
+        userViewModel.fetchUsers()
+    }
+
+    LaunchedEffect(key1 = uiState) {
         when (uiState) {
             is UserUIState.Success -> {
-                Toast.makeText(context, uiState.message, Toast.LENGTH_LONG).show()
-                navController.navigate("HomeScreen"){
-                popUpTo("UserScreen") { inclusive = true } // Adjust based on your actual navigation setup
-            }
+                if(uiState.showToast) {
+                    Toast.makeText(context, uiState.message, Toast.LENGTH_LONG).show()
+                }
             }
             is UserUIState.Error -> {
                 Toast.makeText(context, uiState.error, Toast.LENGTH_LONG).show()
@@ -52,43 +66,69 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
     }
 
     Column(
-    verticalArrangement = Arrangement.spacedBy(20.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 30.dp)
+            .padding(horizontal = 24.dp, vertical = 30.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Header()
-        Text(
-            text = "User Screen",
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 16.dp)
-        )
-        Button(
-            onClick = { showDialog = true },
-            modifier = Modifier.padding(16.dp)
+        Column(
+            verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            Text(text = "Add User",
-                style = TextStyle(fontSize = 18.sp)
+            Header()
+            Text(
+                text = "User Screen",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 16.dp)
             )
-        }
-        if (uiState is UserUIState.Loading) {
-            Text("Loading...", modifier = Modifier.padding(vertical = 10.dp))
-        }
-        AddUserDialog(
-            showDialog = showDialog,
-            onDismiss = { showDialog = false },
-            onUserAdded = { userEmail, password,role ->
-                userViewModel.addUser(userEmail, password, role)
+            Button(
+                onClick = { showDialog = true },
+                modifier = Modifier.padding(16.dp),
+            ) {
+                Text(
+                    text = "Add User",
+                    style = TextStyle(fontSize = 18.sp)
+                )
             }
-        )
-
-        Column(modifier = Modifier
-            .fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally)
-        {
-            BottomNavigation(navController, sharedViewModel)
+            if (uiState is UserUIState.Loading) {
+                Text("Loading...", modifier = Modifier.padding(vertical = 10.dp))
+            }
+            AddUserDialog(
+                showDialog = showDialog,
+                onDismiss = { showDialog = false },
+                onUserAdded = { userEmail, password, role ->
+                    userViewModel.addUser(userEmail, password, role)
+                },
+                selectedRole = selectedRole,
+                onRoleSelected = { role ->
+                    selectedRole = role
+                }
+            )
+            LazyColumn(modifier = Modifier.weight(1f).padding(bottom = 60.dp)) {
+                items(users) { user ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "${user.email} (${user.role})",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        IconButton(onClick = { userViewModel.deleteUser(user.email) }) {
+                            Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete user")
+                        }
+                    }
+                }
+            }
         }
     }
-
+    Column(modifier = Modifier
+        .fillMaxSize(),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.End)
+    {
+        BottomNavigation(navController, sharedViewModel)
+    }
 }
