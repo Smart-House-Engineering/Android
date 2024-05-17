@@ -72,6 +72,7 @@ private fun processLoginResult(token: String) {
     jwtPayload?.let {
         _userRole.value = it.role
         _userEmail.value = it.email
+        _isLoggedIn.value = true
         _navigationDestination.value = when (it.role) {
             "OWNER" -> "HomeScreen"
             "TENANT" -> "HomeScreen"
@@ -84,7 +85,7 @@ private fun processLoginResult(token: String) {
     }
 }
 
-    fun resetNavigationDestination() {
+    private fun resetNavigationDestination() {
         _navigationDestination.value = null
     }
 
@@ -136,7 +137,6 @@ fun updateSensors(sensorName: String, newState: Boolean) {
                     val updateResponse = response.body()!!
                     val devices = updateResponse.updatedHome.devices
 
-                    // Map the updated devices from the response back to sensor data objects.
                     val updatedSensors = _sensors.value?.map { sensor ->
                         when (sensor.sensorName) {
                             "fan" -> sensor.copy(switchState = devices.fan)
@@ -210,13 +210,13 @@ fun logout() {
         if (success) {
             _isLoggedIn.value = false
             _sensors.postValue(emptyList())
+            resetNavigationDestination()
+            stopSensorUpdates()
         }
     }
 }
 
 }
-
-
 
 sealed class LoginState {
 object Idle : LoginState()
