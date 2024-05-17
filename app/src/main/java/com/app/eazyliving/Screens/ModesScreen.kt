@@ -29,14 +29,13 @@ fun ModesScreen(navController: NavHostController, sharedViewModel: SharedViewMod
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Header()
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-        Header()
         Text(
             text = "Modes Screen",
             textAlign = TextAlign.Center
@@ -45,7 +44,7 @@ fun ModesScreen(navController: NavHostController, sharedViewModel: SharedViewMod
 
                 SensorCard(
                     sensorName = "Emergency Mode",
-                    switchStateInt = if (viewMode != null) if (viewMode) 1 else 0 else null,
+                    switchStateInt = if (viewMode) 1 else 0,
                     switchStateBool = viewMode,
                     sensorIcon = {
                         Icon(
@@ -67,9 +66,13 @@ fun ModesScreen(navController: NavHostController, sharedViewModel: SharedViewMod
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
+    }
 
-        Spacer(modifier = Modifier.weight(1f))
-
+    Column(modifier = Modifier
+        .fillMaxSize(),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.End)
+    {
         when (userRole) {
             "TENANT" -> TenantBottomNavigation(navController, sharedViewModel)
             "OWNER" -> BottomNavigation(navController, sharedViewModel)

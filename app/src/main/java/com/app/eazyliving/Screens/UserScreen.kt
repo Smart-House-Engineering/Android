@@ -38,11 +38,11 @@ import com.app.eazyliving.ViewModel.UserViewModel
 import com.app.eazyliving.components.AddUserDialog
 import com.app.eazyliving.components.Header
 
-
 @Composable
 fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = viewModel(), sharedViewModel: SharedViewModel) {
-    var showDialog by remember { mutableStateOf(false)
-    }
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedRole by remember { mutableStateOf("") } // Initialize with a default role
+
     val uiState = userViewModel.uiState.collectAsState().value
     val context = LocalContext.current
     val users by userViewModel.users.collectAsState()
@@ -57,8 +57,6 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
                 if(uiState.showToast) {
                     Toast.makeText(context, uiState.message, Toast.LENGTH_LONG).show()
                 }
-
-
             }
             is UserUIState.Error -> {
                 Toast.makeText(context, uiState.error, Toast.LENGTH_LONG).show()
@@ -70,9 +68,8 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
     Column(
         modifier = Modifier.fillMaxSize()
             .padding(horizontal = 24.dp, vertical = 30.dp),
-    verticalArrangement = Arrangement.spacedBy(20.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
-
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -100,10 +97,14 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
                 onDismiss = { showDialog = false },
                 onUserAdded = { userEmail, password, role ->
                     userViewModel.addUser(userEmail, password, role)
+                },
+                selectedRole = selectedRole,
+                onRoleSelected = { role ->
+                    selectedRole = role
                 }
             )
             LazyColumn(modifier = Modifier.weight(1f).padding(bottom = 60.dp)) {
-            items(users) { user ->
+                items(users) { user ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -118,17 +119,16 @@ fun UserScreen(navController: NavHostController, userViewModel: UserViewModel = 
                         IconButton(onClick = { userViewModel.deleteUser(user.email) }) {
                             Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete user")
                         }
-                        }
                     }
                 }
             }
         }
-
-        Column(modifier = Modifier
-            .fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.End)
-        {
-            BottomNavigation(navController, sharedViewModel)
-        }
     }
+    Column(modifier = Modifier
+        .fillMaxSize(),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.End)
+    {
+        BottomNavigation(navController, sharedViewModel)
+    }
+}
