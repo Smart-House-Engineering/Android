@@ -34,18 +34,18 @@ fun HomeScreen(navController: NavHostController,
     val isLoggedIn by sharedViewModel.isLoggedIn.collectAsState()
     LaunchedEffect(isLoggedIn) {
         if (!isLoggedIn) {
-                sharedViewModel.stopSensorUpdates()
+            sharedViewModel.stopSensorUpdates()
 
-                try {
-                    navController.navigate(Screen.LoginScreen.route) {
-                        popUpTo(Screen.HomeScreen.route) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                } catch (e: Exception) {
-                    Log.e("NavigationError", "Failed to navigate: ${e.localizedMessage}")
+            try {
+                navController.navigate(Screen.LoginScreen.route) {
+                    popUpTo(Screen.HomeScreen.route) { inclusive = true }
+                    launchSingleTop = true
                 }
+            } catch (e: Exception) {
+                Log.e("NavigationError", "Failed to navigate: ${e.localizedMessage}")
             }
-       else {
+        }
+        else {
             sharedViewModel.startSensorUpdates()
         }
     }
@@ -98,7 +98,8 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
 
                 SensorCard(
                     sensorName = sensor.sensorName,
-                    switchState = sensor.switchState,
+                    switchStateInt = sensor.switchStateInt,
+                    switchStateBool = sensor.switchStateBool,
                     sensorIcon = {
                         when (sensor.sensorName) {
 
@@ -108,11 +109,11 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Fan" -> Image(
+                            /*"Fan" -> Image(
                                 painterResource(R.drawable.fan), contentDescription = "Fan",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
-                            )
+                            )*/
                             "RFan" -> Image(
                                 painterResource(R.drawable.rfan), contentDescription = "RFan",
                                 modifier = Modifier.size(24.dp),
@@ -129,17 +130,17 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Relay" -> Image(
+                            "relay" -> Image(
                                 painterResource(R.drawable.relay), contentDescription = "relay",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Door" -> Image(
+                            "door" -> Image(
                                 painterResource(R.drawable.door), contentDescription = "door",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            "Window" -> Image(
+                            "window" -> Image(
                                 painterResource(R.drawable.window), contentDescription = "window",
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
@@ -184,9 +185,9 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                 }
                 Spacer(modifier = Modifier.height(8.dp)) // Add some space between sensor cards
             }
-    }
         }
     }
+}
 
 @Composable
 fun BottomNavigation(navController: NavHostController,  sharedViewModel: SharedViewModel) {
@@ -207,3 +208,4 @@ fun TenantBottomNavigation(navController: NavHostController, sharedViewModel: Sh
         onLogoutClick = { sharedViewModel.logout() }
     )
 }
+

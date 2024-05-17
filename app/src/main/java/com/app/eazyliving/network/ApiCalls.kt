@@ -50,60 +50,53 @@ class ApiCalls(private val apiService: ApiService) {
         }
     }
 
-    suspend fun logout() {
-        try {
-            val response = apiService.logout()
-            if (response.isSuccessful) {
-            // Send the user to the login screen.
-            } else {
-            // Handle unsuccessful request by displaying an error message to the user.
-            }
-        } catch (e: Exception) {
-        // Handle errors by displaying an error message.
-        }
-    }
-
-
-suspend fun getSensors(): List<SensorData>? {
-    val maxRetries = 3
-    var currentRetry = 0
-    while (currentRetry < maxRetries) {
-        try {
-            // Set a timeout for the network request
-            val response = withTimeout(5000) {  // Timeout set to 5 seconds
-                Retrofit.apiService.getSensors()
-            }
-            Log.d("Sensors", "API response: $response")
-            if (response.isSuccessful) {
-                val devicesResponse = response.body()
-                Log.d("test response", "Devices data: ${devicesResponse?.devices}")
-                return devicesResponse?.devices?.let { device ->
-                    val sensorsList = mutableListOf<SensorData>()
-                    Devices::class.memberProperties.forEach { property ->
-                        val sensorName = property.name
-                        val value = property.get(device)
-                        when (value) {
-                            is Boolean -> sensorsList.add(SensorData(sensorName, value))
-                            is Int -> sensorsList.add(SensorData(sensorName, value > 0))
-                        }
-                    }
-                    sensorsList
+    suspend fun getSensors(): List<SensorData>? {
+        val maxRetries = 3
+        var currentRetry = 0
+        while (currentRetry < maxRetries) {
+            try {
+                // Set a timeout for the network request
+                val response = withTimeout(5000) {
+                    Retrofit.apiService.getSensors()
                 }
-            } else {
-                Log.e("SensorsError", "Failed to fetch sensors: ${response.errorBody()?.string()}")
+                Log.d("Sensors", "API response: $response")
+                if (response.isSuccessful) {
+                    val devicesResponse = response.body()
+                    Log.d("test response", "Devices data: ${devicesResponse?.devices}")
+                    return devicesResponse?.devices?.let { device ->
+                        val sensorsList = mutableListOf<SensorData>()
+                        Devices::class.memberProperties.forEach { property ->
+                            val sensorName = property.name
+                            val value = property.get(device)
+                            val switchStateInt = when (sensorName) {
+                                "yellowLed", "window", "door", "gasSensor", "soilSensor","steamSensor" -> if (value is Int) value else null
+                                else -> null
+                            }
+                            val switchStateBool = when (sensorName) {
+                                "yellowLed", "window", "door" -> if (value is Int) value > 0 else (value as? Boolean) ?: false
+                                else -> value as? Boolean
+                            }
+                            sensorsList.add(SensorData(sensorName, switchStateInt, switchStateBool))
+                        }
+                        sensorsList
+                    }
+                } else {
+                    Log.e("SensorsError", "Failed to fetch sensors: ${response.errorBody()?.string()}")
+                }
+            } catch (e: TimeoutException) {
+                Log.e("SensorsError", "Timeout while fetching sensors", e)
+                currentRetry++
+                delay(2000)
+            } catch (e: Exception) {
+                Log.e("SensorsError", "Exception while fetching sensors", e)
+                break
             }
-        } catch (e: TimeoutException) {
-            Log.e("SensorsError", "Timeout while fetching sensors", e)
-
-            currentRetry++
-            delay(2000)
-        } catch (e: Exception) {
-            Log.e("SensorsError", "Exception while fetching sensors", e)
-            break
         }
+        return null
     }
-    return null
-}
+
+
+
 
 //    suspend fun updateSensors(): Boolean  {
 //

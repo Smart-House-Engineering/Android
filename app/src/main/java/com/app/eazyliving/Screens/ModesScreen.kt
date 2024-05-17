@@ -45,7 +45,8 @@ fun ModesScreen(navController: NavHostController, sharedViewModel: SharedViewMod
 
                 SensorCard(
                     sensorName = "Emergency Mode",
-                    switchState = viewMode,
+                    switchStateInt = if (viewMode != null) if (viewMode) 1 else 0 else null,
+                    switchStateBool = viewMode,
                     sensorIcon = {
                         Icon(
                             painter = painterResource(id = R.drawable.emergency),
@@ -58,6 +59,7 @@ fun ModesScreen(navController: NavHostController, sharedViewModel: SharedViewMod
                         modesViewModel.toggleEmergencyMode()
                     }
                 )
+
 
                 Text(
                     text = if (viewMode) "Emergency mode is currently ON" else "Emergency mode is currently OFF",

@@ -1,13 +1,10 @@
 package com.app.eazyliving.ViewModel
 
-import android.app.Application
-import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.eazyliving.components.SessionRepository
@@ -90,7 +87,7 @@ private fun processLoginResult(token: String) {
     }
 
 
-fun getSensors() {
+/*fun getSensors() {
     viewModelScope.launch {
         try {
             val fetchedSensors = apiCalls.getSensors()
@@ -115,68 +112,59 @@ fun getSensors() {
 
         }
     }
-}
+}*/
 
-fun updateSensors(sensorName: String, newState: Boolean) {
-    viewModelScope.launch {
-        val updatedSensorValue = when (sensorName) {
-            // Directly map sensor names to their new Boolean state.
-            "fan", "lights", "RFan", "motion", "buzzer", "relay", "whiteLed", "button1", "button2" -> newState
-            // Convert Boolean to Int for specific sensors.
-            "yellowLed", "door", "window", "gasSensor", "photocell", "soilSensor", "steamSensor" -> if (newState) 1 else 0
-            else -> null
-        }
+    fun updateSensors(sensorName: String, newState: Any) { // Change parameter type to Any
+        viewModelScope.launch {
+            val updatedSensorValue = when (sensorName) {
+                // Directly map sensor names to their new state.
+                "fan", "lights", "RFan", "motion", "buzzer", "relay", "whiteLed", "button1", "button2" -> newState
+                // For sensors with integer state, convert boolean newState to integer.
+                "yellowLed", "door", "window", "gasSensor", "photocell", "soilSensor", "steamSensor" -> if (newState is Boolean) if (newState) 1 else 0 else newState
+                else -> null
+            }
 
-        updatedSensorValue?.let { value ->
-            val requestBody = mapOf(sensorName to value)
-            val finalRequestBody = mapOf("updatedDevices" to requestBody)
+            updatedSensorValue?.let { value ->
+                val requestBody = mapOf(sensorName to value)
+                val finalRequestBody = mapOf("updatedDevices" to requestBody)
 
-            try {
-                val response = Retrofit.apiService.updateSensors(finalRequestBody)
-                if (response.isSuccessful && response.body() != null) {
-                    val updateResponse = response.body()!!
-                    val devices = updateResponse.updatedHome.devices
+                try {
+                    val response = Retrofit.apiService.updateSensors(finalRequestBody)
+                    if (response.isSuccessful && response.body() != null) {
+                        val updateResponse = response.body()!!
+                        val devices = updateResponse.updatedHome.devices
 
-                    val updatedSensors = _sensors.value?.map { sensor ->
-                        when (sensor.sensorName) {
-                            "fan" -> sensor.copy(switchState = devices.fan)
-                            "RFan" -> sensor.copy(switchState = devices.RFan)
-                            "motion" -> sensor.copy(switchState = devices.motion)
-                            "buzzer" -> sensor.copy(switchState = devices.buzzer)
-                            "relay" -> sensor.copy(switchState = devices.relay)
-                            "whiteLed" -> sensor.copy(switchState = devices.whiteLed)
-                            "button1" -> sensor.copy(switchState = devices.button1)
-                            "button2" -> sensor.copy(switchState = devices.button2)
-                            "yellowLed" -> sensor.copy(switchState = devices.yellowLed > 0)
-                            "servo1" -> sensor.copy(switchState = devices.door > 0)
-                            "servo2" -> sensor.copy(switchState = devices.window > 0)
-                            "gasSensor" -> sensor.copy(switchState = devices.gasSensor > 0)
-                            "photocell" -> sensor.copy(switchState = devices.photocell > 0)
-                            "soilSensor" -> sensor.copy(switchState = devices.soilSensor > 0)
-                            "steamSensor" -> sensor.copy(switchState = devices.steamSensor > 0)
-                            else -> sensor
-                        }
-                    } ?: emptyList()
+                        // Map the updated devices from the response back to sensor data objects.
+                        val updatedSensors = _sensors.value?.map { sensor ->
+                            when (sensor.sensorName) {
+                                // For Boolean sensors, update the switch state
+                                "fan", "RFan", "motion", "buzzer", "relay", "whiteLed", "button1", "button2" -> if (sensor.sensorName == sensorName) sensor.copy(switchStateBool = newState as Boolean) else sensor
+                                // For Integer sensors, update the switch state
+                                "yellowLed", "door", "window", "gasSensor", "photocell", "soilSensor", "steamSensor" -> if (sensor.sensorName == sensorName) sensor.copy(switchStateInt = newState as Int) else sensor
+                                else -> sensor
+                            }
+                        }?.toList() ?: emptyList()
 
-                    _sensors.postValue(updatedSensors)
-                } else {
+                        _sensors.postValue(updatedSensors)
+                    } else {
+                        Log.e(
+                            "ViewModel",
+                            "Failed to update sensor state. Error: ${
+                                response.errorBody()?.string()
+                            }"
+                        )
+                    }
+                } catch (e: Exception) {
                     Log.e(
                         "ViewModel",
-                        "Failed to update sensor state. Error: ${
-                            response.errorBody()?.string()
-                        }"
+                        "Network error or serialization issue when updating sensors",
+                        e
                     )
                 }
-            } catch (e: Exception) {
-                Log.e(
-                    "ViewModel",
-                    "Network error or serialization issue when updating sensors",
-                    e
-                )
             }
         }
     }
-}
+
 
 fun startSensorUpdates() {
     viewModelScope.launch {
