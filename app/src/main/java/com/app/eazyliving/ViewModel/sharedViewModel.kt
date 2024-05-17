@@ -72,6 +72,7 @@ private fun processLoginResult(token: String) {
     jwtPayload?.let {
         _userRole.value = it.role
         _userEmail.value = it.email
+        _isLoggedIn.value = true
         _navigationDestination.value = when (it.role) {
             "OWNER" -> "HomeScreen"
             "TENANT" -> "HomeScreen"
@@ -84,7 +85,7 @@ private fun processLoginResult(token: String) {
     }
 }
 
-    fun resetNavigationDestination() {
+    private fun resetNavigationDestination() {
         _navigationDestination.value = null
     }
 
@@ -209,6 +210,8 @@ fun logout() {
         if (success) {
             _isLoggedIn.value = false
             _sensors.postValue(emptyList())
+            resetNavigationDestination()
+            stopSensorUpdates()
         }
     }
 }

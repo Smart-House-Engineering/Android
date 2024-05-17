@@ -34,7 +34,7 @@ fun HomeScreen(navController: NavHostController,
     val isLoggedIn by sharedViewModel.isLoggedIn.collectAsState()
     LaunchedEffect(isLoggedIn) {
         if (!isLoggedIn) {
-                sharedViewModel.stopSensorUpdates()  // Ensure updates are stopped before navigation
+                sharedViewModel.stopSensorUpdates()
 
                 try {
                     navController.navigate(Screen.LoginScreen.route) {
