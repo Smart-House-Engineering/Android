@@ -26,8 +26,7 @@ import com.app.eazyliving.components.TenantBottomBar
 
 
 @Composable
-fun HomeScreen(navController: NavHostController,
-               sharedViewModel: SharedViewModel = viewModel()) {
+fun HomeScreen(navController: NavHostController, sharedViewModel: SharedViewModel = viewModel()) {
     val userEmail by sharedViewModel.userEmail.observeAsState()
     val userRole by sharedViewModel.userRole.observeAsState()
     val sensors by sharedViewModel.sensors.observeAsState()
@@ -114,16 +113,6 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-                            /*"RFan" -> Image(
-                                painterResource(R.drawable.rfan), contentDescription = "RFan",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )*/
-//                            "motion" -> Image(
-//                                painterResource(R.drawable.motion), contentDescription = "Motion",
-//                                modifier = Modifier.size(24.dp),
-//                                contentScale = ContentScale.Fit
-//                            )
                             "buzzer" -> Image(
 
                                 painterResource(R.drawable.buzzer), contentDescription = "Buzzer",
@@ -166,17 +155,6 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
                                 modifier = Modifier.size(24.dp),
                                 contentScale = ContentScale.Fit
                             )
-//                            "button1" -> Image(
-//                                painterResource(R.drawable.button1), contentDescription = "button1",
-//                                modifier = Modifier.size(24.dp),
-//                                contentScale = ContentScale.Fit
-//                            )
-//                            "button2" -> Image(
-//                                painterResource(R.drawable.button2), contentDescription = "button2",
-//                                modifier = Modifier.size(24.dp),
-//                                contentScale = ContentScale.Fit
-//                            )
-
                         }
                     }
                 ) { newState ->
