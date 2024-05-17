@@ -84,7 +84,7 @@ fun UserInfoRow(userEmail: String?, userRole: String?) {
 @Composable
 fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
     val filteredSensors = sensors.filterNot { sensor ->
-        sensor.sensorName in listOf("button1", "button2", "motion", "photocell")
+        sensor.sensorName in listOf("button1", "button2", "motion", "photocell", "fan")
     }
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
