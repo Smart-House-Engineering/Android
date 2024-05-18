@@ -170,7 +170,7 @@ fun ExternalSensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewMo
 @Composable
 fun ExternalBottomNavigation(navController: NavHostController, sharedViewModel: SharedViewModel) {
     ExternalBottomBar(
-        onHomeClick = { navController.navigate(Screen.HomeScreen.route) },
+       // onHomeClick = { navController.navigate(Screen.HomeScreen.route) },
         onLogoutClick = { sharedViewModel.logout() }
     )
 }

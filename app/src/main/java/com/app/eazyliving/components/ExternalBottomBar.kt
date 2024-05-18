@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun ExternalBottomBar(
-    onHomeClick: () -> Unit,
+  //  onHomeClick: () -> Unit,
     onLogoutClick: () -> Unit
 ) {
     Row(
@@ -28,7 +28,7 @@ fun ExternalBottomBar(
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        ExternalBottomBarItem(Icons.Default.Home, "Home", onHomeClick)
+      //  ExternalBottomBarItem(Icons.Default.Home, "Home", onHomeClick)
         ExternalBottomBarItem(Icons.AutoMirrored.Filled.Logout, "Logout", onLogoutClick)
     }
 }
