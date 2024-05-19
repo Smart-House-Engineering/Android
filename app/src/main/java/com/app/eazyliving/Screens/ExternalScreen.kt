@@ -84,85 +84,33 @@ fun UserInfo(userEmail: String?, userRole: String?) {
 
 @Composable
 fun ExternalSensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
-    val filteredSensors = sensors.filterNot { sensor ->
-        sensor.sensorName in listOf("button1", "button2", "motion", "photocell", "RFan")
-    }
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    ) {
-        if (filteredSensors.isNotEmpty()) {
-            items(items = filteredSensors, key = { sensor -> sensor.sensorName }) { sensor ->
+    val gasSensor = sensors.find { it.sensorName == "gasSensor" }
+    val otherSensors = sensors.filterNot { it.sensorName == "gasSensor" || it.sensorName in listOf("button1", "button2", "motion", "photocell", "RFan") }
+
+    Column {
+        gasSensor?.let {
+            ExternalSensorCard(
+                sensorName = it.sensorName,
+                switchStateInt = it.switchStateInt,
+                switchStateBool = it.switchStateBool
+            )
+        }
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        ) {
+            items(items = otherSensors, key = { sensor -> sensor.sensorName }) { sensor ->
                 Log.d("sensorData", sensor.toString())
 
                 ExternalSensorCard(
                     sensorName = sensor.sensorName,
                     switchStateInt = sensor.switchStateInt,
                     switchStateBool = sensor.switchStateBool
-                    /*
-                    sensorIcon = {
-                        when (sensor.sensorName) {
-                            "yellowLed" -> Image(
-                                painterResource(R.drawable.lights),
-                                contentDescription = "yellowLed",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                            "fan" -> Image(
-                                painterResource(R.drawable.fan), contentDescription = "Fan",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                            "buzzer" -> Image(
-
-                                painterResource(R.drawable.buzzer), contentDescription = "Buzzer",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                            "relay" -> Image(
-                                painterResource(R.drawable.relay), contentDescription = "relay",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                            "door" -> Image(
-                                painterResource(R.drawable.door), contentDescription = "door",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                            "window" -> Image(
-                                painterResource(R.drawable.window), contentDescription = "window",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                            "gasSensor" -> Image(
-                                painterResource(R.drawable.gassensor), contentDescription = "gasSensor",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                            "soilSensor" -> Image(
-
-                                painterResource(R.drawable.soilsensor), contentDescription = "soilSensor",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                            "steamSensor" -> Image(
-                                painterResource(R.drawable.steamsensor), contentDescription = "steamSensor",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                            "whiteLed" -> Image(
-                                painterResource(R.drawable.whiteled), contentDescription = "whiteLed",
-                                modifier = Modifier.size(24.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                        }
-                    }
-                    */
                 )
                 Spacer(modifier = Modifier.height(8.dp)) // Add some space between sensor cards
-
             }
         }
     }
