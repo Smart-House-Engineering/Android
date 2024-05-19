@@ -53,7 +53,7 @@ fun ExternalSensorCard(
                 val finalSensorName = formattedSensorName.replace(Regex("(?<=.)(?=\\p{Lu})"), " ") // Insert a space before any capitalized letter after the first one
                 Text(
                     text = finalSensorName,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), // Make the text bold
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     modifier = Modifier.padding(start = 8.dp), // Add padding to the left of the sensor name
                     color = Color(0xFF1C1E1F) // Set the color of the sensor name
                 )
@@ -71,21 +71,21 @@ fun ExternalSensorCard(
                     )
                 } else if (switchStateInt != null) {
                     val color = if (sensorName == "gasSensor") {
-                        if (switchStateInt in 0..100) Color(0xFF00960D) else Color.Red
+                        if (switchStateInt in 0..350) Color(0xFF00960D) else Color.Red
                     } else {
                         if (switchStateInt == 1) Color(0xFF00960D) else Color.Red
                     }
                     Text(
                         text = "$switchStateInt", // Remove 'Value' from the text
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), // Make the text bold
-                        modifier = Modifier.padding(end = 8.dp), // Add padding to the right of the sensor state
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.padding(end = 8.dp),
                         color = color // Set color based on state
                     )
                 } else {
                     Text(
                         text = "Unknown State",
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), // Make the text bold
-                        modifier = Modifier.padding(end = 8.dp), // Add padding to the right of the sensor state
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.padding(end = 8.dp),
                         color = Color(0xFF838A8F)
                     )
                 }
