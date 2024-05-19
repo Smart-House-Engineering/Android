@@ -12,7 +12,7 @@ import com.app.eazyliving.Screens.LoginScreen
 import com.app.eazyliving.Screens.ModesScreen
 import com.app.eazyliving.Screens.Screen
 import com.app.eazyliving.Screens.UserScreen
-import com.app.eazyliving.Screens.externalScreen
+import com.app.eazyliving.Screens.ExternalScreen
 import com.app.eazyliving.Screens.subUserScreen
 import com.app.eazyliving.ViewModel.ModesViewModel
 import com.app.eazyliving.ViewModel.ModesViewModelFactory
@@ -34,14 +34,14 @@ fun Navigation(sharedViewModelFactory: SharedViewModelFactory, userViewModelFact
             LoginScreen(navController = navController, sharedViewModel = sharedViewModel)
         }
         composable(route = Screen.HomeScreen.route) {
-
             HomeScreen(navController = navController, sharedViewModel = sharedViewModel)
         }
         composable(route = Screen.SubUserScreen.route) {
             subUserScreen(navController = navController)
         }
+
         composable(route = Screen.ExternalScreen.route) {
-            externalScreen(navController = navController)
+            ExternalScreen(navController = navController, sharedViewModel = sharedViewModel)
         }
 
         composable(route = Screen.ModesScreen.route) {
@@ -49,9 +49,7 @@ fun Navigation(sharedViewModelFactory: SharedViewModelFactory, userViewModelFact
         }
 
         composable(route = Screen.UserScreen.route) {
-            UserScreen(navController = navController, userViewModel = userViewModel,sharedViewModel  )
+            UserScreen(navController = navController, userViewModel = userViewModel,sharedViewModel)
         }
-
-
     }
 }
