@@ -100,10 +100,10 @@ fun ExternalSensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewMo
                 ExternalSensorCard(
                     sensorName = sensor.sensorName,
                     switchStateInt = sensor.switchStateInt,
-                    switchStateBool = sensor.switchStateBool,
+                    switchStateBool = sensor.switchStateBool
+                    /*
                     sensorIcon = {
                         when (sensor.sensorName) {
-                            // ... same as in HomeScreen.kt
                             "yellowLed" -> Image(
                                 painterResource(R.drawable.lights),
                                 contentDescription = "yellowLed",
@@ -159,6 +159,7 @@ fun ExternalSensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewMo
                             )
                         }
                     }
+                    */
                 )
                 Spacer(modifier = Modifier.height(8.dp)) // Add some space between sensor cards
 

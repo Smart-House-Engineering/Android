@@ -29,8 +29,67 @@ import androidx.compose.ui.unit.dp
 fun ExternalSensorCard(
     sensorName: String,
     switchStateInt: Int?,
+    switchStateBool: Boolean?
+) {
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .height(70.dp)
+            .width(160.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFC4E2FB)),
+            verticalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(4.dp)
+            ) {
+                Text(
+                    text = sensorName,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.offset(20.dp),
+                    color = Color(0xFF838A8F)
+                )
+                // Display the state for integer sensors and provide a switch for boolean sensors
+                if (switchStateBool != null) {
+                    Text(
+                        text = "State: ${if (switchStateBool) "On" else "Off"}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.offset(20.dp),
+                        color = Color(0xFF838A8F)
+                    )
+                } else if (switchStateInt != null) {
+                    Text(
+                        text = "Value: $switchStateInt",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.offset(20.dp),
+                        color = Color(0xFF838A8F)
+                    )
+                } else {
+                    Text(
+                        text = "Unknown State",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.offset(20.dp),
+                        color = Color(0xFF838A8F)
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+
+/*
+@Composable
+fun ExternalSensorCard(
+    sensorName: String,
+    switchStateInt: Int?,
     switchStateBool: Boolean?,
-    sensorIcon: @Composable () -> Unit
+    //sensorIcon: @Composable () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -44,6 +103,7 @@ fun ExternalSensorCard(
                 .background(Color(0xFFC4E2FB)),
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
+            /*
             Box(
                 modifier = Modifier
                     .size(40.dp)
@@ -51,9 +111,14 @@ fun ExternalSensorCard(
                     .offset(20.dp, 20.dp)
                     .background(color = Color.White, shape = CircleShape),
                 contentAlignment = Alignment.Center
-            ) {
+            )
+
+
+            {
                 sensorIcon()
             }
+            */
+
             Text(
                 text = sensorName,
                 style = MaterialTheme.typography.titleMedium,
@@ -91,3 +156,4 @@ fun ExternalSensorCard(
         }
     }
 }
+*/
