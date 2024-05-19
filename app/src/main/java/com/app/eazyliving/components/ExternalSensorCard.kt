@@ -70,11 +70,16 @@ fun ExternalSensorCard(
                         color = if (switchStateBool) Color(0xFF00960D) else Color.Red // Set color based on state
                     )
                 } else if (switchStateInt != null) {
+                    val color = if (sensorName == "gasSensor") {
+                        if (switchStateInt in 0..100) Color(0xFF00960D) else Color.Red
+                    } else {
+                        if (switchStateInt == 1) Color(0xFF00960D) else Color.Red
+                    }
                     Text(
                         text = "$switchStateInt", // Remove 'Value' from the text
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), // Make the text bold
                         modifier = Modifier.padding(end = 8.dp), // Add padding to the right of the sensor state
-                        color = if (switchStateInt == 1) Color(0xFF00960D) else Color.Red // Set color based on state
+                        color = color // Set color based on state
                     )
                 } else {
                     Text(
