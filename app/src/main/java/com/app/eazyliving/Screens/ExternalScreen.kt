@@ -1,34 +1,22 @@
 package com.app.eazyliving.Screens
 
 import android.util.Log
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.app.eazyliving.R
 import com.app.eazyliving.ViewModel.SharedViewModel
 import com.app.eazyliving.components.Header
 import com.app.eazyliving.components.UserCard
 import com.app.eazyliving.components.DateCard
 import com.app.eazyliving.components.ExternalBottomBar
 import com.app.eazyliving.components.ExternalSensorCard
-import com.app.eazyliving.components.TenantBottomBar
 import com.app.eazyliving.model.SensorData
 
 @Composable
@@ -119,7 +107,6 @@ fun ExternalSensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewMo
 @Composable
 fun ExternalBottomNavigation(navController: NavHostController, sharedViewModel: SharedViewModel) {
     ExternalBottomBar(
-       // onHomeClick = { navController.navigate(Screen.HomeScreen.route) },
         onLogoutClick = { sharedViewModel.logout() }
     )
 }
