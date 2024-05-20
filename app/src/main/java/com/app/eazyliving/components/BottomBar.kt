@@ -1,6 +1,7 @@
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Home
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun BottomBar(
+    selectedPage: String,
     onHomeClick: () -> Unit,
     onUserClick: () -> Unit,
     onModeClick: () -> Unit,
@@ -26,20 +28,40 @@ fun BottomBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(67.dp)
             .background(Color(0xFFC4E2FB))
-            .padding(16.dp),
+            .padding(start = 18.dp, end = 18.dp, top = 5.dp, bottom = 5.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        BottomBarItem(Icons.Default.Home, "Home", onHomeClick)
-        BottomBarItem(Icons.Default.Person, "User", onUserClick)
-        BottomBarItem(Icons.Default.NightsStay, "Mode", onModeClick)
-        BottomBarItem(Icons.AutoMirrored.Filled.Logout, "Logout", onLogoutClick)
+        BottomBarItem(
+            icon = Icons.Default.Home,
+            text = "Home",
+            onClick = onHomeClick,
+            selected = selectedPage == "Home"
+        )
+        BottomBarItem(
+            icon = Icons.Default.Person,
+            text = "User",
+            onClick = onUserClick,
+            selected = selectedPage == "User"
+        )
+        BottomBarItem(
+            icon = Icons.Default.NightsStay,
+            text = "Mode",
+            onClick = onModeClick,
+            selected = selectedPage == "Mode"
+        )
+        BottomBarItem(
+            icon = Icons.AutoMirrored.Filled.Logout,
+            text = "Logout",
+            onClick = onLogoutClick,
+            selected = selectedPage == "Logout"
+        )
     }
 }
 
 @Composable
-fun BottomBarItem(icon: ImageVector, text: String, onClick: () -> Unit) {
+fun BottomBarItem(icon: ImageVector, text: String, onClick: () -> Unit, selected: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -47,8 +69,24 @@ fun BottomBarItem(icon: ImageVector, text: String, onClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Icon(imageVector = icon, contentDescription = text, Modifier.size(48.dp)) // Adjust the size as needed
-        Text(text = text, color = Color.White, fontSize = 12.sp)
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = if (selected) {
+                Modifier
+                    .size(40.dp)
+                    .background(Color.White, shape = CircleShape)
+            } else {
+                Modifier.size(40.dp)
+            }
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = text,
+                tint = Color.Black,
+                modifier = Modifier.size(26.dp)
+            )
+        }
+        Text(text = text, color = Color.Black, fontSize = 12.sp)
     }
 }
 

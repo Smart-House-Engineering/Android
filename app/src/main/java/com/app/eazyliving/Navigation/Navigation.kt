@@ -12,8 +12,10 @@ import com.app.eazyliving.Screens.LoginScreen
 import com.app.eazyliving.Screens.ModesScreen
 import com.app.eazyliving.Screens.Screen
 import com.app.eazyliving.Screens.UserScreen
-import com.app.eazyliving.Screens.externalScreen
+import com.app.eazyliving.Screens.ExternalScreen
 import com.app.eazyliving.Screens.subUserScreen
+import com.app.eazyliving.ViewModel.ModesViewModel
+import com.app.eazyliving.ViewModel.ModesViewModelFactory
 import com.app.eazyliving.ViewModel.SharedViewModel
 import com.app.eazyliving.ViewModel.SharedViewModelFactory
 import com.app.eazyliving.ViewModel.UserViewModel
@@ -21,34 +23,33 @@ import com.app.eazyliving.ViewModel.UserViewModelFactory
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Navigation(sharedViewModelFactory: SharedViewModelFactory, userViewModelFactory: UserViewModelFactory) {
+fun Navigation(sharedViewModelFactory: SharedViewModelFactory, userViewModelFactory: UserViewModelFactory, modesViewModelFactory: ModesViewModelFactory) {
     val navController = rememberNavController()
     val sharedViewModel: SharedViewModel = viewModel(factory = sharedViewModelFactory)
     val userViewModel:UserViewModel  = viewModel(factory = userViewModelFactory)
+    val modeViewModel: ModesViewModel = viewModel(factory = modesViewModelFactory)
 
     NavHost(navController = navController, startDestination = Screen.LoginScreen.route){
         composable(route = Screen.LoginScreen.route) {
             LoginScreen(navController = navController, sharedViewModel = sharedViewModel)
         }
         composable(route = Screen.HomeScreen.route) {
-
             HomeScreen(navController = navController, sharedViewModel = sharedViewModel)
         }
         composable(route = Screen.SubUserScreen.route) {
             subUserScreen(navController = navController)
         }
+
         composable(route = Screen.ExternalScreen.route) {
-            externalScreen(navController = navController)
+            ExternalScreen(navController = navController, sharedViewModel = sharedViewModel)
         }
 
         composable(route = Screen.ModesScreen.route) {
-            ModesScreen(navController = navController,sharedViewModel)
+            ModesScreen(navController = navController,sharedViewModel, modeViewModel)
         }
 
         composable(route = Screen.UserScreen.route) {
-            UserScreen(navController = navController, userViewModel = userViewModel,sharedViewModel  )
+            UserScreen(navController = navController, userViewModel = userViewModel,sharedViewModel)
         }
-
-
     }
 }

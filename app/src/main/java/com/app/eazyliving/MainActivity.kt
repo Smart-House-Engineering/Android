@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.app.eazyliving.Navigation.Navigation
+import com.app.eazyliving.ViewModel.ModesViewModelFactory
 import com.app.eazyliving.ViewModel.SharedViewModelFactory
 import com.app.eazyliving.ViewModel.UserViewModelFactory
 import com.app.eazyliving.components.SessionRepository
@@ -24,17 +25,18 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Retrofit.initialize(this)
-       val apiCalls = ApiCalls( apiService)
+        val apiCalls = ApiCalls( apiService)
         val sessionRepository = SessionRepository(this)
-       val sharedViewModelFactory = SharedViewModelFactory(apiCalls, sessionRepository)
+        val sharedViewModelFactory = SharedViewModelFactory(apiCalls, sessionRepository)
         val userViewModelFactory = UserViewModelFactory(apiService)
+        val modesViewModelFactory = ModesViewModelFactory(apiService)
         setContent {
             EazyLivingTheme {
                 Surface(
                     modifier = Modifier.wrapContentSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Navigation(sharedViewModelFactory,  userViewModelFactory)
+                    Navigation(sharedViewModelFactory,  userViewModelFactory, modesViewModelFactory )
                 }
             }
         }

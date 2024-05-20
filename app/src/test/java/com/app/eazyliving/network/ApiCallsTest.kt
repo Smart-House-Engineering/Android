@@ -1,16 +1,20 @@
 package com.app.eazyliving.network
 
+import org.junit.jupiter.api.Assertions.*
+
+import org.junit.jupiter.api.Test
 import com.app.eazyliving.model.Devices
 import com.app.eazyliving.model.DevicesResponse
-import org.junit.jupiter.api.Assertions.*
 import com.app.eazyliving.model.LoginCredentials
 import com.app.eazyliving.model.SensorData
+
 import kotlinx.coroutines.runBlocking
+
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
+
 import retrofit2.Response
 import okhttp3.Headers
 import okhttp3.ResponseBody
