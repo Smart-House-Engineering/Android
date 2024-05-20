@@ -5,12 +5,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.app.eazyliving.ViewModel.ModesViewModel
 import com.app.eazyliving.ViewModel.SharedViewModel
 import com.app.eazyliving.components.Header
 import com.app.eazyliving.components.UserCard
@@ -20,12 +24,14 @@ import com.app.eazyliving.components.ExternalSensorCard
 import com.app.eazyliving.model.SensorData
 
 @Composable
-fun ExternalScreen(navController: NavHostController, sharedViewModel: SharedViewModel = viewModel()) {
+fun ExternalScreen(navController: NavHostController, sharedViewModel: SharedViewModel = viewModel(),
+                   modesViewModel: ModesViewModel = viewModel()) {
     val userEmail by sharedViewModel.userEmail.observeAsState()
     val userRole by sharedViewModel.userRole.observeAsState()
     val isLoggedIn by sharedViewModel.isLoggedIn.collectAsState()
     val sensors by sharedViewModel.sensors.observeAsState()
-
+    val emergencyMode by modesViewModel.emergencyMode.collectAsState()
+    var showEmergencyDialog by remember { mutableStateOf(false) }
     LaunchedEffect(isLoggedIn) {
         if (!isLoggedIn) {
             sharedViewModel.stopSensorUpdates()
@@ -43,6 +49,9 @@ fun ExternalScreen(navController: NavHostController, sharedViewModel: SharedView
             sharedViewModel.startSensorUpdates()
         }
     }
+    LaunchedEffect(emergencyMode) {
+        showEmergencyDialog = emergencyMode
+    }
 
     Column (modifier = Modifier.fillMaxSize()){
         Header()
@@ -53,6 +62,18 @@ fun ExternalScreen(navController: NavHostController, sharedViewModel: SharedView
         when (userRole) {
             "EXTERNAL" -> ExternalBottomNavigation(navController, sharedViewModel)
         }
+    }
+    if (showEmergencyDialog) {
+        AlertDialog(
+            onDismissRequest = { showEmergencyDialog = false },
+            title = { Text("Emergency Mode Activated") },
+            text = { Text("Please check up immediately!") },
+            confirmButton = {
+                Button(onClick = { showEmergencyDialog = false }) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }
 

@@ -41,7 +41,7 @@ fun Navigation(sharedViewModelFactory: SharedViewModelFactory, userViewModelFact
         }
 
         composable(route = Screen.ExternalScreen.route) {
-            ExternalScreen(navController = navController, sharedViewModel = sharedViewModel)
+            ExternalScreen(navController = navController, sharedViewModel = sharedViewModel, modesViewModel = modeViewModel)
         }
 
         composable(route = Screen.ModesScreen.route) {
