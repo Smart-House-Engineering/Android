@@ -47,6 +47,7 @@ fun ExternalScreen(navController: NavHostController, sharedViewModel: SharedView
         }
         else {
             sharedViewModel.startSensorUpdates()
+            modesViewModel.fetchEmergencyModeStatus()
         }
     }
     LaunchedEffect(emergencyMode) {
