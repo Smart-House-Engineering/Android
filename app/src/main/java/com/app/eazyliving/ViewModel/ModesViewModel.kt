@@ -28,7 +28,7 @@ class ModesViewModel(private val apiService: ApiService) : ViewModel() {
                 } catch (e: Exception) {
                     // Handle error
                 }
-                delay(5000) // Fetch every 5 seconds
+                delay(2000)
             }
         }
     }
