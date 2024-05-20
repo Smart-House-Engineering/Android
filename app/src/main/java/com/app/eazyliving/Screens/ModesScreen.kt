@@ -15,6 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.app.eazyliving.R
 import com.app.eazyliving.ViewModel.ModesViewModel
 import com.app.eazyliving.ViewModel.SharedViewModel
@@ -36,10 +37,6 @@ fun ModesScreen(navController: NavHostController, sharedViewModel: SharedViewMod
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-        Text(
-            text = "Modes Screen",
-            textAlign = TextAlign.Center
-        )
                 Spacer(modifier = Modifier.height(16.dp))
 
                 SensorCard(
@@ -74,8 +71,8 @@ fun ModesScreen(navController: NavHostController, sharedViewModel: SharedViewMod
         horizontalAlignment = Alignment.End)
     {
         when (userRole) {
-            "TENANT" -> TenantBottomNavigation(navController, sharedViewModel)
-            "OWNER" -> BottomNavigation(navController, sharedViewModel)
+            "TENANT" -> TenantBottomNavigation(navController, sharedViewModel, selectedPage = "Mode")
+            "OWNER" -> BottomNavigation(navController, sharedViewModel, selectedPage = "Mode")
         }
     }
 }

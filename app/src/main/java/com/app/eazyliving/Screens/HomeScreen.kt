@@ -20,6 +20,7 @@ import com.app.eazyliving.components.DateCard
 import com.app.eazyliving.model.SensorData
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.app.eazyliving.R
 import com.app.eazyliving.ViewModel.SharedViewModel
 import com.app.eazyliving.components.TenantBottomBar
@@ -48,6 +49,7 @@ fun HomeScreen(navController: NavHostController, sharedViewModel: SharedViewMode
             sharedViewModel.startSensorUpdates()
         }
     }
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     Column (modifier = Modifier.fillMaxSize()){
         Header()
@@ -57,8 +59,8 @@ fun HomeScreen(navController: NavHostController, sharedViewModel: SharedViewMode
         }
         // Render bottom bar based on user role
         when (userRole) {
-            "TENANT" -> TenantBottomNavigation(navController, sharedViewModel)
-            "OWNER" -> BottomNavigation(navController, sharedViewModel)
+            "TENANT" -> TenantBottomNavigation(navController, sharedViewModel, selectedPage = "Home")
+            "OWNER" -> BottomNavigation(navController, sharedViewModel, selectedPage = "Home")
         }
 
     }
@@ -168,19 +170,25 @@ fun SensorsGrid(sensors: List<SensorData>, sharedViewModel: SharedViewModel) {
 }
 
 @Composable
-fun BottomNavigation(navController: NavHostController,  sharedViewModel: SharedViewModel) {
+fun BottomNavigation(navController: NavHostController,  sharedViewModel: SharedViewModel, selectedPage: String) {
     BottomBar(
         onHomeClick = { navController.navigate(Screen.HomeScreen.route) },
         onUserClick = { navController.navigate(Screen.UserScreen.route) },
         onModeClick = { navController.navigate(Screen.ModesScreen.route) },
-        onLogoutClick = { sharedViewModel.logout() }
+        onLogoutClick = { sharedViewModel.logout() },
+        selectedPage = selectedPage
 
     )
 }
 
 @Composable
-fun TenantBottomNavigation(navController: NavHostController, sharedViewModel: SharedViewModel) {
+fun TenantBottomNavigation(
+    navController: NavHostController,
+    sharedViewModel: SharedViewModel,
+    selectedPage: String
+) {
     TenantBottomBar(
+        selectedPage = selectedPage,
         onHomeClick = { navController.navigate(Screen.HomeScreen.route) },
         onModeClick = { navController.navigate(Screen.ModesScreen.route) },
         onLogoutClick = { sharedViewModel.logout() }

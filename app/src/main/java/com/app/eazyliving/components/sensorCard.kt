@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -35,8 +36,7 @@ fun SensorCard(
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
-                    .align(Alignment.CenterHorizontally)
+                    .size(50.dp)
                     .offset(20.dp, 20.dp)
                     .background(color = Color.White, shape = CircleShape),
                 contentAlignment = Alignment.Center
@@ -45,19 +45,23 @@ fun SensorCard(
             }
             Text(
                 text = sensorName,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.offset(20.dp),
                 color = Color(0xFF838A8F)
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(4.dp)
+                modifier = Modifier.padding(bottom = 10.dp, start = 4.dp)
             ) {
                 // Display the state for integer sensors and provide a switch for boolean sensors
                 if (switchStateBool != null) {
+                    val stateText = when (sensorName) {
+                        "door", "window" -> if (switchStateBool) "Open" else "Closed"
+                        else -> if (switchStateBool) "On" else "Off"
+                    }
                     Text(
-                        text = "State: ${if (switchStateBool) "On" else "Off"}",
-                        style = MaterialTheme.typography.bodyMedium,
+                        text = stateText,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                         modifier = Modifier.offset(20.dp),
                         color = Color(0xFF838A8F)
                     )
@@ -69,8 +73,9 @@ fun SensorCard(
                 } else if (switchStateInt != null) {
                     Text(
                         text = "Value: $switchStateInt",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.offset(20.dp),
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.offset(20.dp)
+                            .padding(bottom = 20.dp),
                         color = Color(0xFF838A8F)
                     )
                 } else {
