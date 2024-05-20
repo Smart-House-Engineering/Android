@@ -26,7 +26,7 @@ class ModesViewModel(private val apiService: ApiService) : ViewModel() {
                         _emergencyMode.value = response.body()?.modes?.emergency ?: false
                     }
                 } catch (e: Exception) {
-                    // Handle error
+                   println("exception: $e")
                 }
                 delay(2000)
             }
