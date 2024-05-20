@@ -108,23 +108,23 @@ class ApiCallsTest {
 
         val result = apiCalls.getSensors()
 
-        // Expected result
+        // Expected result, testing value and type.
         val expected = listOf(
-            SensorData("fan", true),
-            SensorData("yellowLed", true),
-            SensorData("RFan", false),
-            SensorData("motion", true),
-            SensorData("buzzer", false),
-            SensorData("relay", true),
-            SensorData("door", false),
-            SensorData("window", true),
-            SensorData("gasSensor", false),
-            SensorData("photocell", true),
-            SensorData("soilSensor", false),
-            SensorData("steamSensor", true),
-            SensorData("whiteLed", true),
-            SensorData("button1", false),
-            SensorData("button2", true)
+            SensorData("fan", null, true),
+            SensorData("yellowLed", 1, null),
+            SensorData("RFan", null, false),
+            SensorData("motion", null, true),
+            SensorData("buzzer", null, false),
+            SensorData("relay", null, true),
+            SensorData("door", 0, null),
+            SensorData("window", 1, null),
+            SensorData("gasSensor", 0, null),
+            SensorData("photocell", 1, null),
+            SensorData("soilSensor", 0, null),
+            SensorData("steamSensor", 1, null),
+            SensorData("whiteLed", null, true),
+            SensorData("button1", null, false),
+            SensorData("button2", null, true)
         )
 
         // Assert expected result and actual result
