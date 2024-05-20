@@ -22,7 +22,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-class SharedViewModel(private val apiCalls: ApiCalls,private val sessionRepository: SessionRepository ) : ViewModel() {
+class SharedViewModel(private val apiCalls: ApiCalls,private val sessionRepository: SessionRepository,
+                      private val modesViewModel: ModesViewModel) : ViewModel() {
     private var currentDevices: DeviceList? = null
 
     private val _loginState = MutableLiveData<LoginState>()
@@ -42,9 +43,6 @@ class SharedViewModel(private val apiCalls: ApiCalls,private val sessionReposito
 
     private val _isLoggedIn = MutableStateFlow(true)
     val isLoggedIn = _isLoggedIn.asStateFlow()
-
-    private val _shouldUpdateSensors = MutableStateFlow(true)
-    val shouldUpdateSensors: StateFlow<Boolean> = _shouldUpdateSensors.asStateFlow()
 
     private var sensorUpdateJob: Job? = null
 
@@ -114,7 +112,7 @@ private fun processLoginResult(token: String) {
     }
 }*/
 
-    fun updateSensors(sensorName: String, newState: Any) { // Change parameter type to Any
+    fun updateSensors(sensorName: String, newState: Any) {
         viewModelScope.launch {
             val updatedSensorValue = when (sensorName) {
                 // Directly map sensor names to their new state.
@@ -168,6 +166,7 @@ private fun processLoginResult(token: String) {
 
 fun startSensorUpdates() {
     viewModelScope.launch {
+        sensorUpdateJob?.cancel()
         sensorUpdateJob = viewModelScope.launch {
             while (isActive) {
                 try {
@@ -192,14 +191,14 @@ fun stopSensorUpdates() {
 }
 fun logout() {
     viewModelScope.launch {
-        sensorUpdateJob?.cancel()
-        sensorUpdateJob = null
+
         val success = sessionRepository.logout()
         if (success) {
             _isLoggedIn.value = false
             _sensors.postValue(emptyList())
             resetNavigationDestination()
             stopSensorUpdates()
+            modesViewModel.stopFetchingEmergencyModeStatus()
         }
     }
 }
