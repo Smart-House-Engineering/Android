@@ -65,7 +65,7 @@ fun ExternalScreen(navController: NavHostController, sharedViewModel: SharedView
     }
     if (showEmergencyDialog) {
         AlertDialog(
-            onDismissRequest = { showEmergencyDialog = false },
+            onDismissRequest = { },
             title = { Text("Emergency Mode Activated") },
             text = { Text("Please check up immediately!") },
             confirmButton = {
