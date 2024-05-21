@@ -49,8 +49,13 @@ fun ExternalSensorCard(
                     .fillMaxWidth() // Make the row take up the full width of the card
                     .padding(horizontal = 4.dp) // Add some horizontal padding
             ) {
-                val formattedSensorName = sensorName.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } // Capitalize the first letter of the sensor name
-                val finalSensorName = formattedSensorName.replace(Regex("(?<=.)(?=\\p{Lu})"), " ") // Insert a space before any capitalized letter after the first one
+                // Capitalize the first letter of the sensor name
+                val formattedSensorName = sensorName.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+                }
+                // Insert a space before any capitalized letter after the first one
+                val finalSensorName = formattedSensorName.replace(
+                    Regex("(?<=.)(?=\\p{Lu})"), " ")
                 Text(
                     text = finalSensorName,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),

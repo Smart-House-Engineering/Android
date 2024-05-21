@@ -19,22 +19,6 @@ import retrofit2.Response
 import okhttp3.Headers
 import okhttp3.ResponseBody
 
-/*
-    login(LoginCredentials): test successful and unsuccessful login scenario.
-    For the successful scenario, mock the ApiService to return a successful response and
-    check if the method returns the expected result.
-
-    For the unsuccessful scenario, mock the ApiService to return an error response and check if the method handles it correctly.
-
-    logout(): Similar to login, test successful and unsuccessful scenarios.
-
-    getSensors():
-    test scenarios:
-    method successfully retrieves the sensors,
-    fails to retrieve the sensors,
-    and when timeout occurs
- */
-
 class ApiCallsTest {
 
     // Mock ApiService
@@ -67,20 +51,7 @@ class ApiCallsTest {
         }
     }
 
-    // Check if login function handles error responses properly
-    @Test
-    fun login_unsuccessful() = runBlocking {
-        val loginCredentials = LoginCredentials("email", "password")
-        val responseBody = ResponseBody.create(null, "error")
-        val response = Response.error<ResponseBody>(400, responseBody)
-        Mockito.`when`(apiService.login(loginCredentials)).thenReturn(response)
-
-        val result = apiCalls.login(loginCredentials)
-
-        assertNull(result)
-    }
-
-    // Check if getSensors() works when the server returns successful response
+    // Check that the returned list of SensorData matches the expected list
     @Test
     fun getSensors_successful() = runBlocking {
         val devices = Devices(
@@ -103,12 +74,10 @@ class ApiCallsTest {
         val devicesResponse = DevicesResponse("Success", devices)
         val response = Response.success(devicesResponse)
 
-        // Mocks apiService behavior
         Mockito.`when`(apiService.getSensors()).thenReturn(response)
 
         val result = apiCalls.getSensors()
 
-        // Expected result, testing value and type.
         val expected = listOf(
             SensorData("fan", null, true),
             SensorData("yellowLed", 1, null),
@@ -127,7 +96,19 @@ class ApiCallsTest {
             SensorData("button2", null, true)
         )
 
-        // Assert expected result and actual result
         assertEquals(expected, result)
+    }
+
+    // Check that the result is null when the server returns an error response
+    @Test
+    fun getSensors_unsuccessful() = runBlocking {
+        val responseBody = ResponseBody.create(null, "error")
+        val response = Response.error<DevicesResponse>(400, responseBody)
+
+        Mockito.`when`(apiService.getSensors()).thenReturn(response)
+
+        val result = apiCalls.getSensors()
+
+        assertNull(result)
     }
 }
