@@ -70,7 +70,7 @@ suspend fun getSensors(): List<SensorData>? {
                         val sensorName = property.name
                         val value = property.get(device)
                         val switchStateInt = when (sensorName) {
-                            "yellowLed", "window", "door", "gasSensor", "soilSensor", "steamSensor" -> if (value is Int) value else null
+                            "yellowLed", "window", "door", "gasSensor", "soilSensor", "steamSensor", "photocell" -> if (value is Int) value else null
                             else -> null
                         }
                         val switchStateBool = when (sensorName) {
