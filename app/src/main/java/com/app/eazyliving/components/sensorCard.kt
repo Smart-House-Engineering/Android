@@ -56,7 +56,7 @@ fun SensorCard(
                 // Display the state for integer sensors and provide a switch for boolean sensors
                 if (switchStateBool != null) {
                     val stateText = when (sensorName) {
-                        "door", "window" -> if (switchStateBool) "Open" else "Closed"
+                        "door", "window", "photocell" -> if (switchStateBool) "Open" else "Closed"
                         else -> if (switchStateBool) "On" else "Off"
                     }
                     Text(
