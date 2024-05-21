@@ -71,7 +71,6 @@ fun LoginScreen(navController: NavHostController, sharedViewModel: SharedViewMod
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            // the keyboard will go down if the user clicks outside the field
             .pointerInput(Unit) {
                 detectTapGestures(onTap = { focusManager.clearFocus() })
             },
@@ -119,11 +118,6 @@ fun LoginScreen(navController: NavHostController, sharedViewModel: SharedViewMod
         ) {
             Text("Login")
         }
-        if (loginState is LoginState.Error) {
-            val errorMessage = (loginState as LoginState.Error).message
-            Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
-        }
-
         if (loginState is LoginState.Loading) {
             Spacer(modifier = Modifier.height(16.dp))
             CircularProgressIndicator()
