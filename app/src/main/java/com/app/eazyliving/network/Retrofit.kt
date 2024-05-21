@@ -49,57 +49,58 @@ object Retrofit {
     }
     private const val BASE_URL = "https://evanescent-beautiful-venus.glitch.me/"
 
-    class TokenInterceptor(private val context: Context) : Interceptor {
-        override fun intercept(chain: Interceptor.Chain): Response {
-            val request = chain.request()
-            if (request.url.encodedPath.contains("/auth/login")) {
-                return chain.proceed(request)
-            }
-            if (!hasValidCookie()) {
-                // Here you can throw an exception, or handle it by returning a dummy response
-                // For instance, create a response with a 401 Unauthorized status.
-                return chain.proceed(chain.request().newBuilder().build()).newBuilder()
-                    .code(401)
-                    .message("Unauthorized: cookie missing or invalid")
-                    .protocol(chain.connection()?.protocol() ?: Protocol.HTTP_1_1)
-                    .request(chain.request())
-                    .body("{\"error\":\"Unauthorized\"}".toResponseBody("application/json".toMediaTypeOrNull()))
-                    .build()
-            }
-            return chain.proceed(chain.request())
+class TokenInterceptor(private val context: Context) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val request = chain.request()
+        if (request.url.encodedPath.contains("/auth/login")) {
+            return chain.proceed(request)
         }
-
-        private fun hasValidCookie(): Boolean {
-            val sharedPreferences = context.getSharedPreferences("MyCookiePreferences", Context.MODE_PRIVATE)
-            val cookies = sharedPreferences.getStringSet("PREF_COOKIES", null)
-            return cookies?.any { it.startsWith("SmartHouseToken=") } ?: false
+        if (!hasValidCookie()) {
+            return chain.proceed(chain.request().newBuilder().build()).newBuilder()
+                .code(401)
+                .message("Unauthorized: cookie missing or invalid")
+                .protocol(chain.connection()?.protocol() ?: Protocol.HTTP_1_1)
+                .request(chain.request())
+                .body("{\"error\":\"Unauthorized\"}".toResponseBody("application/json".toMediaTypeOrNull()))
+                .build()
         }
+        return chain.proceed(chain.request())
     }
+
+    private fun hasValidCookie(): Boolean {
+        val sharedPreferences = context.getSharedPreferences("MyCookiePreferences", Context.MODE_PRIVATE)
+        val cookies = sharedPreferences.getStringSet("PREF_COOKIES", null)
+        return cookies?.any { it.startsWith("SmartHouseToken=") } ?: false
+    }
+}
 
 
 class RetryInterceptor(private val maxRetries: Int, private val backoff: Long) : Interceptor {
-    override fun intercept(chain: Interceptor.Chain): Response {
-        var request = chain.request()
-        var response: Response
-        var tryCount = 0
+override fun intercept(chain: Interceptor.Chain): Response {
+    var request = chain.request()
+    var response: Response
+    var tryCount = 0
 
-        while (true) {
-            try {
-                response = chain.proceed(request)
-                if (response.isSuccessful) {
-                    return response
-                }
-                response.close()
-            } catch (e: IOException) { // Catch network-related exceptions here
-                if (tryCount >= maxRetries) throw e
+    while (true) {
+        try {
+            response = chain.proceed(request)
+            if (response.isSuccessful) {
+                return response
             }
-
-            val nextDelay = 2.0.pow(tryCount.toDouble()).toLong() * backoff
-            tryCount++
-            Thread.sleep(nextDelay)
-            request = request.newBuilder().build() // Rebuild the request if needed
+            if (request.url.encodedPath.contains("/auth/login")) {
+                return response
+            }
+            response.close()
+        } catch (e: IOException) { // Catch network-related exceptions here
+            if (tryCount >= maxRetries) throw e
         }
+
+        val nextDelay = 2.0.pow(tryCount.toDouble()).toLong() * backoff
+        tryCount++
+        Thread.sleep(nextDelay)
+        request = request.newBuilder().build() // Rebuild the request if needed
     }
+}
 }
 
     val apiService: ApiService by lazy {

@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 
 class SharedViewModel(private val apiCalls: ApiCalls,private val sessionRepository: SessionRepository,
                       private val modesViewModel: ModesViewModel) : ViewModel() {
@@ -51,15 +52,19 @@ class SharedViewModel(private val apiCalls: ApiCalls,private val sessionReposito
 fun login(email: String, password: String) {
     viewModelScope.launch {
         _loginState.value = LoginState.Loading
-        val result = apiCalls.login(LoginCredentials(email, password))
-        if (result != null) {
-            processLoginResult(result)
-        } else {
-            _loginState.value = LoginState.Error("Login failed")
+        try {
+            val result = apiCalls.login(LoginCredentials(email, password))
+            println("resultLogin $result")
+            if (result != null) {
+                processLoginResult(result)
+            } else {
+                _loginState.value = LoginState.Error("Invalid credentials. Please try again.")
+            }
+        } catch (e: Exception) {
+            _loginState.value = LoginState.Error("An error occurred: ${e.message}")
         }
     }
 }
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 private fun processLoginResult(token: String) {
@@ -170,9 +175,11 @@ fun startSensorUpdates() {
         sensorUpdateJob = viewModelScope.launch {
             while (isActive) {
                 try {
-                    val fetchedSensors = apiCalls.getSensors()
-                    if (fetchedSensors != null) {
-                        _sensors.postValue(fetchedSensors!!)
+                    withTimeout(5000) {
+                        val fetchedSensors = apiCalls.getSensors()
+                        if (fetchedSensors != null) {
+                            _sensors.postValue(fetchedSensors!!)
+                        }
                     }
                     delay(5000)
                 } catch (e: Exception) {
